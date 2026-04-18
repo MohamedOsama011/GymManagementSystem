@@ -1,3 +1,10 @@
+﻿:root {
+    --main-gym-color: #e74c3c;
+    --accent-color: #2c3e50;
+    --input-radius: 12px;
+    --main-transition: all 0.3s ease-in-out;
+}
+
 html {
   font-size: 14px;
 }
@@ -20,3 +27,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+.btn-primary {
+    background-color: var(--main-gym-color) !important;
+    border-color: var(--main-gym-color) !important;
+    border-radius: var(--input-radius);
+    transition: var(--main-transition);
+}
+
+    .btn-primary:hover {
+        background-color: var(--accent-color) !important;
+        transform: scale(1.05); /* تكبير بسيط عند الوقوف بالماوس */
+    }
