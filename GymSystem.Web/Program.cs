@@ -73,7 +73,9 @@ namespace GymSystem.Web
             {
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<AppDbContext>();
-                await DbSeeder.SeedAsync(context);
+                var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                await DbSeeder.SeedAsync(context, userManager, roleManager);
             }
 
             app.Run();

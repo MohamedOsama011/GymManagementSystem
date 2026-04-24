@@ -3,6 +3,7 @@ using GymSystem.BLL.Services.Interfaces;
 using GymSystem.Models.DTOs;
 using GymSystem.Web.ViewModels.Dashboard;
 using GymSystem.Web.ViewModels.Members;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -18,6 +19,7 @@ namespace GymSystem.Web.Controllers
             _memberService = memberService;
             _trainerService = trainerService;
         }
+        [Authorize]
         public async Task<IActionResult> Index(string? search)
         {
             var memberDTO = await _memberService.GetAllAsync(search);
