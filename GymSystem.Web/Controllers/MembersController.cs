@@ -108,10 +108,7 @@ namespace GymSystem.Web.Controllers
             await _memberService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-        public IActionResult Test(DashboardViewModel viewModel)
-        {
-            return View(viewModel);
-        }
+        
 
         private async Task PopulateTrainersDropDownList(MemberFormViewModel model)
         {
