@@ -9,6 +9,8 @@ namespace GymSystem.DAL.Repositories.Interfaces
 {
     public interface ITrainerRepository
     {
-        Task<IEnumerable<Trainer>> GetAllWithDetailsAsync();
+        Task<IEnumerable<Trainer>> GetAllWithSpecialtiesAsync();
+        Task<Trainer?> GetWithDetailsAsync(int id);
+        Task<Trainer?> GetByUserIdAsync(string userId);
     }
 }
