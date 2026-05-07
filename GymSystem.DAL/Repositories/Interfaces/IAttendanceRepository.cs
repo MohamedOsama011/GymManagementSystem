@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GymSystem.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace GymSystem.DAL.Repositories.Interfaces
 {
-    internal interface IAttendanceRepository
+    public interface IAttendanceRepository
     {
+        Task<IEnumerable<AttendanceRecord>> GetByMemberAsync(int memberId);
+        Task<IEnumerable<AttendanceRecord>> GetTodayAsync();
+        Task<AttendanceRecord?> GetOpenCheckInAsync(int memberId);
     }
 }
