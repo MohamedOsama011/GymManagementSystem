@@ -1,7 +1,6 @@
 ﻿using GymSystem.BLL.Services.Implementations;
 using GymSystem.BLL.Services.Interfaces;
 using GymSystem.Models.DTOs;
-using GymSystem.Web.ViewModels.Dashboard;
 using GymSystem.Web.ViewModels.Members;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymSystem.Web.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class MembersController : Controller
     {
         private readonly IMemberService _memberService;
