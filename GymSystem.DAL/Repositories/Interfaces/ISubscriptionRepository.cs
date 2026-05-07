@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GymSystem.DAL.Repositories.Interfaces
 {
-    public interface ISubscriptionRepository
+    public interface ISubscriptionRepository : IGenericRepository<Subscription>
     {
-        Task<Subscription?> GetActivSubscriptionAsync(int memberId);
+        Task<Subscription?> GetActiveSubscriptionAsync(int memberId);
         Task<IEnumerable<Subscription>> GetExpiringSoonAsync(int daysAhead);
         Task<IEnumerable<Subscription>> GetByMemberAsync(int memberId);
     }

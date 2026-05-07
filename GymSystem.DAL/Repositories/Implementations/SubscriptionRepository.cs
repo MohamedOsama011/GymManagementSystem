@@ -10,7 +10,7 @@ namespace GymSystem.DAL.Repositories.Implementations
     {
         public SubscriptionRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Subscription?> GetActivSubscriptionAsync(int memberId)
+        public async Task<Subscription?> GetActiveSubscriptionAsync(int memberId)
             => await _dbSet
                 .Include(s => s.Plan)
                 .Where(s => s.MemberId == memberId && s.Status == "Active")

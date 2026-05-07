@@ -11,6 +11,7 @@ namespace GymSystem.DAL.UnitOfWork.Implementations
         private readonly AppDbContext _context;
         public IMemberRepository Members { get; private set; }
         public ITrainerRepository Trainers { get; private set; }
+        public IMembershipPlanRepository MembershipPlans { get; private set; }
 
         public ISubscriptionRepository Subscriptions { get; private set; }
 
@@ -24,6 +25,7 @@ namespace GymSystem.DAL.UnitOfWork.Implementations
 
             Members = new MemberRepository(_context);
             Trainers = new TrainerRepository(_context);
+            MembershipPlans = new MembershipPlanRepository(_context);
             Subscriptions = new SubscriptionRepository(_context);
             GymClasses = new GymClassRepository(_context);
             Attendance = new AttendanceRepository(_context);
