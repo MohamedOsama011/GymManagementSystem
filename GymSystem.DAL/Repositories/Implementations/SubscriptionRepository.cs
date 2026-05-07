@@ -10,6 +10,13 @@ namespace GymSystem.DAL.Repositories.Implementations
     {
         public SubscriptionRepository(AppDbContext context) : base(context) { }
 
+        public async Task<IEnumerable<Subscription>> GetAllWithDetailsAsync()
+            => await _dbSet
+                .Include(s => s.Member)
+                .Include(s => s.Plan)
+                .OrderByDescending(s => s.StartDate)
+                .ToListAsync();
+
         public async Task<Subscription?> GetActiveSubscriptionAsync(int memberId)
             => await _dbSet
                 .Include(s => s.Plan)

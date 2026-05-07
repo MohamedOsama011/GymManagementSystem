@@ -30,12 +30,18 @@ namespace GymSystem.BLL.Services.Implementations
                 FullName = m.FullName,
                 Email = m.Email,
                 Phone = m.Phone,
-                TrainerName = m.Trainer?.FullName ?? "No Trainer"
+                TrainerName = m.Trainer?.FullName ?? "No Trainer",
+                ActivePlanName = m.Subscriptions
+                    .Where(s => s.Status == "Active")
+                    .OrderByDescending(s => s.StartDate)
+                    .Select(s => s.Plan.Name)
+                    .FirstOrDefault(),
+                SubscriptionStatus = m.Subscriptions.Any(s => s.Status == "Active") ? "Active" : "Inactive"
             });
         }
         public async Task<MemberDTO?> GetByIdAsync(int id)
         {
-            var member = await _uow.Members.GetByIdAsync(id);
+            var member = await _uow.Members.GetWithDetailsAsync(id);
             if (member == null) return null;
 
             return new MemberDTO
@@ -44,7 +50,13 @@ namespace GymSystem.BLL.Services.Implementations
                 FullName = member.FullName,
                 Email = member.Email,
                 Phone = member.Phone,
-                TrainerName = member.Trainer?.FullName ?? "No Trainer"
+                TrainerName = member.Trainer?.FullName ?? "No Trainer",
+                ActivePlanName = member.Subscriptions
+                    .Where(s => s.Status == "Active")
+                    .OrderByDescending(s => s.StartDate)
+                    .Select(s => s.Plan.Name)
+                    .FirstOrDefault(),
+                SubscriptionStatus = member.Subscriptions.Any(s => s.Status == "Active") ? "Active" : "Inactive"
             };
         }
 

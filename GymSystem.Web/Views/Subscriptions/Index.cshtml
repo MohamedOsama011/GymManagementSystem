@@ -1,0 +1,53 @@
+@using GymSystem.Models.DTOs
+@model IEnumerable<SubscriptionDto>
+
+@{
+    ViewData["Title"] = "Subscriptions";
+    var pageTitle = ViewBag.PageTitle as string ?? "All Subscriptions";
+    var pageSubtitle = ViewBag.PageSubtitle as string ?? "Complete subscription history and current status";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary">@pageTitle</h2>
+            <p class="text-muted mb-0">@pageSubtitle</p>
+        </div>
+        <div class="btn-group">
+            <a asp-action="Index" class="btn btn-outline-secondary">All Subscriptions</a>
+            <a asp-action="ExpiringSoon" asp-route-daysAhead="7" class="btn btn-outline-primary">Expiring Soon</a>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow rounded">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Member</th>
+                    <th>Plan</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MemberName</td>
+                        <td>@item.PlanName</td>
+                        <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.EndDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <span class="badge bg-warning text-dark">@item.Status</span>
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Assign" asp-route-memberId="@item.MemberId" class="btn btn-sm btn-outline-primary">Assign</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

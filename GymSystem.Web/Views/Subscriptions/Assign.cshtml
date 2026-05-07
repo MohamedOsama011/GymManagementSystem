@@ -1,0 +1,55 @@
+@model GymSystem.Web.ViewModels.Subscriptions.SubscriptionAssignViewModel
+
+@{
+    ViewData["Title"] = "Assign Subscription";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">Assign Subscription for @Model.MemberName</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.CurrentSubscription != null)
+                    {
+                        <div class="alert alert-info">
+                            Current subscription: <strong>@Model.CurrentSubscription.PlanName</strong>
+                            until <strong>@Model.CurrentSubscription.EndDate.ToString("yyyy-MM-dd")</strong>
+                        </div>
+                    }
+
+                    <form asp-action="Assign" method="post">
+                        <input asp-for="MemberId" type="hidden" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="SelectedPlanId" class="form-label fw-semibold"></label>
+                            <select asp-for="SelectedPlanId" class="form-select" asp-items="Model.AvailablePlans">
+                                <option value="">-- Select a plan --</option>
+                            </select>
+                            <span asp-validation-for="SelectedPlanId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                            <input asp-for="StartDate" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-light me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5">Assign</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

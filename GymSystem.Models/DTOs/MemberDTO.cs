@@ -13,5 +13,7 @@ namespace GymSystem.Models.DTOs
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public string? TrainerName { get; set; }
+        public string? ActivePlanName { get; set; }
+        public string SubscriptionStatus { get; set; } = "None";
     }
 }

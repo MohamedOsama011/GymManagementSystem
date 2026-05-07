@@ -31,7 +31,8 @@ namespace GymSystem.Web.Controllers
                 Email = m.Email,
                 Phone = m.Phone ?? "N/A",
                 TrainerName = m.TrainerName,
-                
+                ActivePlanName = m.ActivePlanName,
+                SubscriptionStatus = m.SubscriptionStatus
             });
             return View(viewModel);
         }

@@ -18,6 +18,12 @@ namespace GymSystem.BLL.Services.Implementations
             _uow = uow;
         }
 
+        public async Task<IEnumerable<SubscriptionDto>> GetAllAsync()
+        {
+            var subscriptions = await _uow.Subscriptions.GetAllWithDetailsAsync();
+            return subscriptions.Select(MapToDto);
+        }
+
         public async Task<SubscriptionAssignDto?> GetAssignAsync(int memberId)
         {
             var member = await _uow.Members.GetWithDetailsAsync(memberId);
