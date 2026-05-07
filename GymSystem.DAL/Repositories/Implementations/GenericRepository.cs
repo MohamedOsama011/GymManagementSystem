@@ -7,7 +7,7 @@ namespace GymSystem.DAL.Repositories.Implementations
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
