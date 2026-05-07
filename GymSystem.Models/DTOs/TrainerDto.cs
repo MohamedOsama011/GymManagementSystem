@@ -8,7 +8,8 @@ namespace GymSystem.Models.DTOs
 {
     public class TrainerDto
     {
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string JobTitle { get; set; } = string.Empty;
         public int Id { get; set; }
     }
 }
