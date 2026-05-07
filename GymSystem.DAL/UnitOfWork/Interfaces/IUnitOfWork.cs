@@ -11,6 +11,9 @@ namespace GymSystem.DAL.UnitOfWork.Interfaces
     {
         IMemberRepository Members { get; }
         ITrainerRepository Trainers { get; }
+        ISubscriptionRepository Subscriptions { get; }
+        IGymClassRepository GymClasses { get; }
+        IAttendanceRepository Attendance { get; }
         Task<int> SaveChangesAsync();
     }
 }

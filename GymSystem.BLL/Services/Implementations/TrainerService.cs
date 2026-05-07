@@ -18,7 +18,7 @@ namespace GymSystem.BLL.Services.Implementations
         }
         public async Task<IEnumerable<TrainerDto>> GetAllAsync()
         {
-            var trainers = await _uow.Trainers.GetAllWithDetailsAsync();
+            var trainers = await _uow.Trainers.GetAllWithSpecialtiesAsync();
 
             return trainers.Select(t => new TrainerDto
             {
