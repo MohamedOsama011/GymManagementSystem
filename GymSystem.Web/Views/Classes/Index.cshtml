@@ -1,0 +1,146 @@
+﻿@* 📁 Views/Classes/Index.cshtml *@
+@model IEnumerable<GymSystem.Web.ViewModels.Classes.GymClassListViewModel>
+
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-dumbbell me-2"></i>Gym Classes
+        </h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Class
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Class Name</th>
+                            <th>Trainer</th>
+                            <th>Category</th>
+                            <th>Schedule</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.Name</strong>
+                                    </td>
+                                    <td>@item.TrainerName</td>
+                                    <td>
+                                        <span class="badge bg-info">@item.CategoryName</span>
+                                    </td>
+                                    <td>
+                                        <div><i class="far fa-clock me-1"></i>@item.StartTime.ToString("hh:mm tt") - @item.EndTime.ToString("hh:mm tt")</div>
+                                        <small class="text-muted">@item.StartTime.ToString("MMM dd, yyyy")</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span>@item.EnrolledCount / @item.Capacity</span>
+                                            @if (item.SpotsLeft <= 5 && item.SpotsLeft > 0)
+                                            {
+                                                <span class="badge bg-warning ms-2">@item.SpotsLeft left</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (item.SpotsLeft > 0)
+                                        {
+                                            <span class="badge bg-success">Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Full</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-outline-info" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="btn btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button onclick="deleteClass(@item.Id)"
+                                                    class="btn btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                        <h5>No classes found</h5>
+                                        <p>Click "Add New Class" to create your first class</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteClass(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Classes/Delete/' + id;
+                    form.innerHTML = '@Html.AntiForgeryToken()';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+}

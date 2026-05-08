@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GymSystem.Models.DTOs
 {
-    public class LookupItemDto
+    public class EnrollmentResultDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }
