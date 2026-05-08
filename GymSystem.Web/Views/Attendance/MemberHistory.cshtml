@@ -1,0 +1,298 @@
+﻿@* 📁 Views/Attendance/MemberHistory.cshtml *@
+@model IEnumerable<GymSystem.Web.ViewModels.Attendance.AttendanceViewModel>
+
+@{
+    ViewData["Title"] = "Member Attendance History";
+    var memberId = ViewData["MemberId"] as int?;
+    var memberName = ViewData["MemberName"] as string ?? "Member";
+    var stats = ViewBag.Stats as GymSystem.BLL.Services.Interfaces.AttendanceStatsDto;
+}
+
+<div class="container-fluid">
+    @* Header *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>
+                <i class="fas fa-history me-2"></i>Attendance History
+            </h2>
+            <h5 class="text-muted">
+                <i class="fas fa-user me-2"></i>@memberName
+                <span class="badge bg-primary ms-2">ID: @memberId</span>
+            </h5>
+        </div>
+        <div>
+            <a asp-action="CheckIn" class="btn btn-success me-2">
+                <i class="fas fa-sign-in-alt me-1"></i> Check-In
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Today
+            </a>
+        </div>
+    </div>
+
+    @* Member Stats Cards *@
+    @if (stats != null)
+    {
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-left-info shadow h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Total Visits
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @stats.TotalCheckIns
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-left-success shadow h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Average Duration
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @(stats.AverageDurationMinutes > 0
+                                                                    ? $"{(int)stats.AverageDurationMinutes} min"
+                                                                    : "N/A")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-left-warning shadow h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Total Time Spent
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @if (stats.AverageDurationMinutes > 0 && stats.TotalCheckIns > 0)
+                                    {
+                                        var totalHours = (stats.AverageDurationMinutes * stats.TotalCheckIns) / 60;
+                                        <span>@totalHours.ToString("F1") hours</span>
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Attendance Records Table *@
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold">
+                <i class="fas fa-list me-2"></i>Visit History
+            </h6>
+            <span class="badge bg-light text-dark">
+                @Model.Count() records
+            </span>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(m => m.CheckInTime))
+                            {
+                                <tr class="@item.RowClass">
+                                    <td>
+                                        <strong>@item.CheckInTime.ToString("MMM dd, yyyy")</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@item.CheckInTime.ToString("dddd")</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-success">
+                                            <i class="fas fa-sign-in-alt me-1"></i>
+                                            @item.FormattedCheckIn
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.CheckOutTime.HasValue)
+                                        {
+                                            <span class="text-danger">
+                                                <i class="fas fa-sign-out-alt me-1"></i>
+                                                @item.FormattedCheckOut
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-spinner fa-spin me-1"></i>Active
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">@item.Duration</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @item.StatusBadgeClass">
+                                            <i class="fas @item.StatusIcon me-1"></i>
+                                            @item.StatusText
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Timeline Visualization *@
+                <div class="mt-4">
+                    <h6 class="font-weight-bold mb-3">
+                        <i class="fas fa-chart-bar me-2"></i>Recent Activity Timeline
+                    </h6>
+                    <div class="timeline">
+                        @foreach (var item in Model.OrderByDescending(m => m.CheckInTime).Take(10))
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker @(item.IsOpen ? "bg-success" : "bg-primary")"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">@item.CheckInTime.ToString("MMM dd, yyyy")</h6>
+                                    <p class="mb-0 text-muted small">
+                                        <i class="fas fa-clock me-1"></i>
+                                        @item.FormattedCheckIn - @item.FormattedCheckOut
+                                        <span class="mx-2">|</span>
+                                        <i class="fas fa-stopwatch me-1"></i>
+                                        @item.Duration
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No attendance records found</h5>
+                    <p class="text-muted">This member hasn't visited the gym yet.</p>
+                    <a asp-action="CheckIn" class="btn btn-success mt-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Record First Visit
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .border-left-info {
+            border-left: 4px solid #36b9cc;
+        }
+
+        .border-left-success {
+            border-left: 4px solid #1cc88a;
+        }
+
+        .border-left-warning {
+            border-left: 4px solid #f6c23e;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+            .timeline:before {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: #e3e6f0;
+            }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -27px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #4e73df;
+        }
+
+            .timeline-marker.bg-success {
+                box-shadow: 0 0 0 2px #1cc88a;
+                animation: pulse 2s infinite;
+            }
+
+        .timeline-content {
+            padding: 5px 15px;
+            background: #f8f9fc;
+            border-radius: 5px;
+        }
+
+        @@keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(28, 200, 138, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(28, 200, 138, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(28, 200, 138, 0);
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // تفعيل Tooltips لو محتاج
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}
