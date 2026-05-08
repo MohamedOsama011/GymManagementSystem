@@ -17,6 +17,8 @@ namespace GymSystem.DAL.UnitOfWork.Interfaces
         ISubscriptionRepository Subscriptions { get; }
         IGymClassRepository GymClasses { get; }
         IAttendanceRepository Attendance { get; }
+        IGenericRepository<T> Repository<T>() where T : class;
+
         Task<int> SaveChangesAsync();
     }
 }

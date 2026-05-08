@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GymSystem.DAL.Repositories.Interfaces
 {
-    public interface IGymClassRepository
+    public interface IGymClassRepository : IGenericRepository<GymClass>
     {
         Task<IEnumerable<GymClass>> GetAllWithDetailsAsync();
         Task<GymClass?> GetWithDetailsAsync(int id);

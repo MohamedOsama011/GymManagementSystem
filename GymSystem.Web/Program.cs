@@ -46,6 +46,7 @@ namespace GymSystem.Web
             builder.Services.AddScoped<IMemberService, MemberService>();
             builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            builder.Services.AddScoped<IGymClassService, GymClassService>();
 
 
             var app = builder.Build();

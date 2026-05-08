@@ -21,6 +21,8 @@ namespace GymSystem.DAL.UnitOfWork.Implementations
 
         public IAttendanceRepository Attendance { get; private set; }
 
+        private readonly Dictionary<Type, object> _genericRepositories = new();
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
@@ -38,6 +40,13 @@ namespace GymSystem.DAL.UnitOfWork.Implementations
 
         public void Dispose() => _context.Dispose();
 
-        
+        public IGenericRepository<T> Repository<T>() where T : class
+        {
+            var type = typeof(T);
+            if (!_genericRepositories.ContainsKey(type))
+                _genericRepositories[type] = new GenericRepository<T>(_context);
+            return (IGenericRepository<T>)_genericRepositories[type];
+            
+        }
     }
 }
