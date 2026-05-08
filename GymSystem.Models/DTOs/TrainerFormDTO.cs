@@ -13,5 +13,7 @@ namespace GymSystem.Models.DTOs
         [Required]
         [StringLength(100)]
         public string JobTitle { get; set; } = string.Empty;
+
+        public List<int> SelectedSpecialtyIds { get; set; } = new();
     }
 }

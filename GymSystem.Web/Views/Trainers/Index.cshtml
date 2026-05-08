@@ -18,6 +18,8 @@
                 <tr>
                     <th>Full Name</th>
                     <th>Job Title</th>
+                    <th>Members</th>
+                    <th>Specialties</th>
                     <th class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -27,6 +29,8 @@
                     <tr>
                         <td class="fw-bold">@item.FullName</td>
                         <td>@item.JobTitle</td>
+                        <td>@item.MemberCount</td>
+                        <td>@(item.Specialties.Any() ? string.Join(", ", item.Specialties) : "None")</td>
                         <td class="text-center">
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
                             <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"

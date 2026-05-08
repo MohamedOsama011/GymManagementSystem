@@ -1,9 +1,4 @@
-﻿using GymSystem.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GymSystem.Models.DTOs;
 
 namespace GymSystem.BLL.Services.Interfaces
 {
@@ -11,6 +6,7 @@ namespace GymSystem.BLL.Services.Interfaces
     {
         Task<IEnumerable<TrainerDto>> GetAllAsync();
         Task<TrainerFormDTO?> GetAsync(int? id = null);
+        Task<IEnumerable<SpecialtyDto>> GetSpecialtiesLookupAsync();
         Task CreateAsync(TrainerFormDTO model);
         Task UpdateAsync(TrainerFormDTO model);
         Task DeleteAsync(int id);

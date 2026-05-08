@@ -11,5 +11,7 @@ namespace GymSystem.Models.DTOs
         public string FullName { get; set; } = string.Empty;
         public string JobTitle { get; set; } = string.Empty;
         public int Id { get; set; }
+        public int MemberCount { get; set; }
+        public IEnumerable<string> Specialties { get; set; } = new List<string>();
     }
 }

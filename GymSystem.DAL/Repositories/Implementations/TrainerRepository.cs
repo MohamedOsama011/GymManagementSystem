@@ -16,6 +16,7 @@ namespace GymSystem.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<Trainer>> GetAllWithSpecialtiesAsync()
             => await _dbSet
+                .Include(t => t.Members)
                 .Include(t => t.TrainerSpecialties)
                     .ThenInclude(ts => ts.Specialty)
                 .ToListAsync();

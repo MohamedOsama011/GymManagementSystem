@@ -12,6 +12,8 @@ namespace GymSystem.DAL.UnitOfWork.Interfaces
         IMemberRepository Members { get; }
         ITrainerRepository Trainers { get; }
         IMembershipPlanRepository MembershipPlans { get; }
+        ISpecialtyRepository Specialties { get; }
+        ITrainerSpecialtyRepository TrainerSpecialties { get; }
         ISubscriptionRepository Subscriptions { get; }
         IGymClassRepository GymClasses { get; }
         IAttendanceRepository Attendance { get; }

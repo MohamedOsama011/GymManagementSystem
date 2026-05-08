@@ -3,6 +3,7 @@ using GymSystem.Models.DTOs;
 using GymSystem.Web.ViewModels.Trainers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymSystem.Web.Controllers
 {
@@ -24,7 +25,9 @@ namespace GymSystem.Web.Controllers
             {
                 Id = t.Id,
                 FullName = t.FullName,
-                JobTitle = t.JobTitle
+                JobTitle = t.JobTitle,
+                MemberCount = t.MemberCount,
+                Specialties = t.Specialties
             });
 
             return View(viewModel);
@@ -34,11 +37,15 @@ namespace GymSystem.Web.Controllers
         public async Task<IActionResult> Create()
         {
             var model = await _trainerService.GetAsync();
-            return View(new TrainerFormViewModel
+            var viewModel = new TrainerFormViewModel
             {
                 FullName = model?.FullName ?? string.Empty,
-                JobTitle = model?.JobTitle ?? string.Empty
-            });
+                JobTitle = model?.JobTitle ?? string.Empty,
+                SelectedSpecialtyIds = model?.SelectedSpecialtyIds ?? new List<int>()
+            };
+
+            await PopulateSpecialtiesDropDownList(viewModel);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -47,13 +54,15 @@ namespace GymSystem.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                await PopulateSpecialtiesDropDownList(model);
                 return View(model);
             }
 
             await _trainerService.CreateAsync(new TrainerFormDTO
             {
                 FullName = model.FullName,
-                JobTitle = model.JobTitle
+                JobTitle = model.JobTitle,
+                SelectedSpecialtyIds = model.SelectedSpecialtyIds
             });
 
             return RedirectToAction(nameof(Index));
@@ -68,12 +77,16 @@ namespace GymSystem.Web.Controllers
                 return NotFound();
             }
 
-            return View(new TrainerFormViewModel
+            var viewModel = new TrainerFormViewModel
             {
                 Id = trainer.Id,
                 FullName = trainer.FullName,
-                JobTitle = trainer.JobTitle
-            });
+                JobTitle = trainer.JobTitle,
+                SelectedSpecialtyIds = trainer.SelectedSpecialtyIds
+            };
+
+            await PopulateSpecialtiesDropDownList(viewModel);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -82,6 +95,7 @@ namespace GymSystem.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                await PopulateSpecialtiesDropDownList(model);
                 return View(model);
             }
 
@@ -89,7 +103,8 @@ namespace GymSystem.Web.Controllers
             {
                 Id = model.Id,
                 FullName = model.FullName,
-                JobTitle = model.JobTitle
+                JobTitle = model.JobTitle,
+                SelectedSpecialtyIds = model.SelectedSpecialtyIds
             });
 
             return RedirectToAction(nameof(Index));
@@ -101,6 +116,16 @@ namespace GymSystem.Web.Controllers
         {
             await _trainerService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PopulateSpecialtiesDropDownList(TrainerFormViewModel model)
+        {
+            var specialties = await _trainerService.GetSpecialtiesLookupAsync();
+            model.AllSpecialties = specialties.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.Name
+            }).ToList();
         }
     }
 }
