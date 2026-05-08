@@ -20,7 +20,7 @@ namespace GymSystem.BLL.Services.Interfaces
     public class AttendanceStatsDto
     {
         public int TotalCheckIns { get; set; }
-        public int ActiveMembers { get; set; } // لسه موجودين
+        public int ActiveMembers { get; set; } 
         public double AverageDurationMinutes { get; set; }
         public DateTime? BusiestDay { get; set; }
         public int PeakHour { get; set; }
