@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GymSystem.DAL.Repositories.Interfaces
 {
-    public interface IAttendanceRepository
+    public interface IAttendanceRepository : IGenericRepository<AttendanceRecord>
     {
         Task<IEnumerable<AttendanceRecord>> GetByMemberAsync(int memberId);
         Task<IEnumerable<AttendanceRecord>> GetTodayAsync();
