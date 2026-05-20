@@ -1,0 +1,336 @@
+﻿@model GymSystem.Web.ViewModels.Dashboard.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var today = DateTime.Today;
+}
+
+@section Styles {
+    <style>
+        .stat-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .member-list-item {
+            transition: background-color 0.2s;
+        }
+        .member-list-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    @* Header *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h3>
+            <p class="text-muted mb-0">
+                <i class="fas fa-calendar-day me-1"></i>
+                @today.ToString("dddd, MMMM d, yyyy")
+            </p>
+        </div>
+        <div>
+            <a asp-controller="Attendance" asp-action="CheckIn" class="btn btn-success">
+                <i class="fas fa-sign-in-alt me-2"></i>Quick Check-In
+            </a>
+        </div>
+    </div>
+
+    @* Alert Messages *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* Stats Cards *@
+    <div class="row g-3 mb-4">
+        @* Total Members Card *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small mb-1">Total Members</p>
+                            <h3 class="mb-0 fw-bold">@Model.TotalMembers.ToString("N0")</h3>
+                            <small class="text-muted">@Model.MemberGrowthIndicator Registered</small>
+                        </div>
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Members" asp-action="Index"
+                           class="text-decoration-none small">
+                            View all members <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Active Subscriptions Card *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small mb-1">Active Subscriptions</p>
+                            <h3 class="mb-0 fw-bold text-success">@Model.ActiveSubscriptions.ToString("N0")</h3>
+                            <small class="text-muted">@Model.SubscriptionRate of total</small>
+                        </div>
+                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Subscriptions" asp-action="Index"
+                           class="text-decoration-none small">
+                            Manage subscriptions <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Today's Check-ins Card *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small mb-1">Today's Check-ins</p>
+                            <h3 class="mb-0 fw-bold text-primary">@Model.TodayAttendance.ToString("N0")</h3>
+                            <small class="text-muted">@Model.AttendanceRate of members</small>
+                        </div>
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Attendance" asp-action="Index"
+                           class="text-decoration-none small">
+                            View attendance <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Total Classes Card *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small mb-1">Total Classes</p>
+                            <h3 class="mb-0 fw-bold text-info">@Model.TotalClasses.ToString("N0")</h3>
+                            <small class="text-muted">Available classes</small>
+                        </div>
+                        <div class="stat-icon bg-info bg-opacity-10 text-info">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Classes" asp-action="Index"
+                           class="text-decoration-none small">
+                            Manage classes <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        @* Expiring Subscriptions *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Expiring within 7 days
+                    </h6>
+                    @if (Model.ExpiringSubscriptions.Any())
+                    {
+                        <span class="badge bg-warning">
+                            @Model.ExpiringSubscriptions.Count()
+                            @(Model.ExpiringSubscriptions.Count() == 1 ? "member" : "members")
+                        </span>
+                    }
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.ExpiringSubscriptions.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                            <p class="text-muted mb-0">All subscriptions are up to date! 🎉</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var sub in Model.ExpiringSubscriptions)
+                            {
+                                <div class="list-group-item member-list-item border-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div class="avatar-circle bg-@sub.UrgencyClass">
+                                                    @sub.MemberName?.Substring(0, 1).ToUpper()
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <a asp-controller="Members" asp-action="Details"
+                                                   asp-route-id="@sub.MemberId"
+                                                   class="fw-semibold text-decoration-none text-dark">
+                                                    @sub.MemberName
+                                                </a>
+                                                <div class="text-muted small">@sub.PlanName</div>
+                                                <small class="text-muted">Expires: @sub.EndDateFormatted</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-@sub.UrgencyClass rounded-pill">
+                                                <i class="fas @sub.UrgencyIcon me-1"></i>
+                                                @sub.UrgencyText
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Today's Check-ins *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="fas fa-clipboard-check text-primary me-2"></i>
+                        Today's Activity
+                    </h6>
+                    <div>
+                        <a asp-controller="Attendance" asp-action="CheckIn"
+                           class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i> Check In
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.TodayCheckIns.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-list text-muted fa-3x mb-3"></i>
+                            <p class="text-muted mb-2">No activity yet today</p>
+                            <a asp-controller="Attendance" asp-action="CheckIn"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-sign-in-alt me-1"></i> Record First Check-In
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var record in Model.TodayCheckIns)
+                            {
+                                <div class="list-group-item member-list-item border-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <span class="badge @record.StatusBadgeClass p-2">
+                                                    <i class="fas @record.StatusIcon"></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold">@record.MemberName</span>
+                                                <div class="text-muted small">
+                                                    <i class="far fa-clock me-1"></i>
+                                                    @record.CheckInTimeFormatted
+                                                    @if (record.CheckOutTime.HasValue)
+                                                    {
+                                                        <span> → @record.CheckOutTimeFormatted</span>
+                                                        <br />
+                                                        <span class="text-info">
+                                                            <i class="fas fa-stopwatch me-1"></i>
+                                                            @record.Duration
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <br />
+                                                        <span class="text-success small">
+                                                            <i class="fas fa-spinner fa-spin me-1"></i>
+                                                            @record.Duration
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (record.IsOpen)
+                                        {
+                                            <form asp-controller="Attendance" asp-action="CheckOut"
+                                                  method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@record.AttendanceId" />
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-sign-out-alt me-1"></i>
+                                                    Check Out
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill">
+                                                <i class="fas fa-check me-1"></i>Done
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh dashboard every 5 minutes
+        // setInterval(function() {
+        //     location.reload();
+        // }, 300000);
+
+        // Confirm before checkout
+        $(document).ready(function() {
+            $('form[asp-action="CheckOut"]').on('submit', function(e) {
+                var memberName = $(this).closest('.list-group-item').find('.fw-semibold').text();
+                if (!confirm('Check out ' + memberName + '?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
