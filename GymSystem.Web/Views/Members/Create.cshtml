@@ -1,9 +1,160 @@
-﻿@using GymSystem.Web.ViewModels.Members
+@using GymSystem.Web.ViewModels.Members
 @model MemberFormViewModel
 
 @{
     ViewData["Title"] = "Add Member";
 }
 
-<h2 class="fw-bolder fs-1 mb-2">Member Onboarding</h2>
-<p class="text-muted">Register a new athlete into the Kinetic ecosystem. Precision data ensures tailored performance tracking.</p>
+@section Styles {
+    <style>
+        .form-card {
+            box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);
+            background-color: var(--surface-lowest);
+        }
+        
+        .form-label {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .kinetic-input, .kinetic-select {
+            background-color: var(--surface-low) !important;
+            border: 2px solid transparent !important;
+            border-radius: 12px !important;
+            padding: 12px 18px !important;
+            color: var(--text-main) !important;
+            font-family: var(--font-body);
+            transition: all 0.2s ease !important;
+            outline: none !important;
+        }
+
+        .kinetic-input:focus, .kinetic-select:focus {
+            border-color: var(--primary) !important;
+            background-color: var(--surface-lowest) !important;
+            box-shadow: 0px 0px 0px 4px rgba(0, 74, 232, 0.15) !important;
+        }
+
+        .btn-action {
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-action:hover {
+            transform: scale(1.02);
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    @* Back Link *@
+    <div class="mb-4">
+        <a asp-action="Index" class="text-decoration-none text-muted fw-semibold d-inline-flex align-items-center gap-2 btn-action">
+            <i class="bi bi-arrow-left"></i> Back to Members
+        </a>
+    </div>
+
+    @* Header *@
+    <div class="mb-5">
+        <h1 class="display-6 fw-extrabold text-main mb-2" style="font-family: var(--font-display); letter-spacing: -1.5px;">
+            Member Onboarding
+        </h1>
+        <p class="text-muted mb-0">
+            Register a new athlete into the Kinetic ecosystem. Precision data ensures tailored performance tracking.
+        </p>
+    </div>
+
+    @* Form Container *@
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 rounded-4 p-4 p-md-5 form-card">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-control kinetic-input" placeholder="e.g. John Doe" />
+                            <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control kinetic-input" placeholder="e.g. john@domain.com" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label"></label>
+                            <input asp-for="Phone" class="form-control kinetic-input" placeholder="e.g. 01XXXXXXXXX" />
+                            <span asp-validation-for="Phone" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control kinetic-input" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label asp-for="TrainerId" class="form-label"></label>
+                        <select asp-for="TrainerId" class="form-select kinetic-select" asp-items="Model.Trainers">
+                            <option value="">-- Choose a Personal Trainer (Optional) --</option>
+                        </select>
+                        <span asp-validation-for="TrainerId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-3">
+                        <a asp-action="Index" class="btn btn-logout rounded-pill px-4 py-2.5 btn-action fw-semibold">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill text-white px-5 py-2.5 btn-action" style="background: var(--primary-gradient); font-weight: 600; font-family: var(--font-display);">
+                            Register Athlete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        @* Sidebar Tip Column for Kinetic Bento Look *@
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card border-0 rounded-4 p-4 bg-surface-low h-100 d-flex flex-column justify-content-between" style="min-height: 350px;">
+                <div>
+                    <h5 class="fw-bold font-display text-main mb-3">Onboarding Tips</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted" style="font-size: 0.9rem;">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-info-circle text-primary mt-1"></i>
+                            <span>Ensure the athlete's email is unique. It will be used for logins and notifications.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-info-circle text-primary mt-1"></i>
+                            <span>Personal trainer assignment is optional, but highly recommended for tailored programming.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-info-circle text-primary mt-1"></i>
+                            <span>Onboarding automatically places the member on an inactive state until a subscription is assigned.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-surface-lowest rounded-3 p-3 mt-4">
+                    <span class="d-block text-muted small fw-bold text-uppercase mb-1">Quick Action</span>
+                    <a asp-controller="Trainers" asp-action="Index" class="text-decoration-none text-primary fw-semibold small d-inline-flex align-items-center gap-1 btn-action">
+                        Manage Trainers <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
