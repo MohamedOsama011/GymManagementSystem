@@ -21,7 +21,7 @@ namespace GymSystem.BLL.Services.Implementations
 
             if (!string.IsNullOrEmpty(search))
             {
-                members = members.Where(m => m.FullName.Contains(search, StringComparison.OrdinalIgnoreCase));
+                members = members.Where(m => m.FullName.Contains(search, StringComparison.OrdinalIgnoreCase) || m.Id.ToString().Contains(search));
             }
 
             return members.Select(m => new MemberDTO
