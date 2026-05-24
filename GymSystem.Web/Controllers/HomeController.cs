@@ -16,7 +16,7 @@ namespace GymSystem.Web.Controllers
         public IActionResult Index()
         {
             //return View();
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction("index", "dashboard");
         }
 
         public IActionResult Privacy()

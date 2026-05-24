@@ -3,18 +3,82 @@
 @{
     ViewData["Title"] = "Trainers";
 }
+@section Styles {
+    <style>
+        .members-table-card {
+            box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);
+        }
 
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 4px;
+        }
+
+            .table th {
+                border: none !important;
+                font-family: var(--font-display);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.75px;
+                color: var(--text-main);
+                opacity: 0.6;
+                padding: 16px 24px !important;
+            }
+
+            .table td {
+                border: none !important;
+                padding: 18px 24px !important;
+                font-family: var(--font-body);
+                color: var(--text-main);
+            }
+
+            .table tbody tr {
+                border-radius: 12px;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+                .table tbody tr:hover {
+                    background-color: var(--surface-low) !important;
+                }
+
+        .member-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--primary);
+            background-color: rgba(0, 74, 232, 0.1);
+        }
+
+        .btn-action {
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+            .btn-action:hover {
+                transform: scale(1.02);
+            }
+    </style>
+}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary"><i class="bi bi-person-badge-fill"></i> Trainers</h2>
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            <i class="bi bi-plus-lg"></i> Add New Trainer
-        </a>
+        <h2 > Trainers</h2>
+        <div>
+            <a asp-action="Create" class="btn btn-primary rounded-pill text-white px-4 py-2.5 d-flex align-items-center gap-2 btn-action" style="background: var(--primary-gradient); font-weight: 600; font-family: var(--font-display);">
+                <i class="bi bi-plus-lg"></i> Add New Trainer
+            </a>
+        </div>
     </div>
 
     <div class="table-responsive shadow rounded">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
+            <thead >
                 <tr>
                     <th>Full Name</th>
                     <th>Job Title</th>

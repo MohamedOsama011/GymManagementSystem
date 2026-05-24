@@ -3,6 +3,7 @@ using GymSystem.BLL.Services.Interfaces;
 using GymSystem.DAL.Data;
 using GymSystem.DAL.UnitOfWork.Implementations;
 using GymSystem.DAL.UnitOfWork.Interfaces;
+using GymSystem.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -49,6 +50,8 @@ namespace GymSystem.Web
             builder.Services.AddScoped<IGymClassService, GymClassService>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
+
 
 
             var app = builder.Build();

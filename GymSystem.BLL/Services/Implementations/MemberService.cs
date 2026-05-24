@@ -21,7 +21,7 @@ namespace GymSystem.BLL.Services.Implementations
 
             if (!string.IsNullOrEmpty(search))
             {
-                members = members.Where(m => m.FullName.Contains(search));
+                members = members.Where(m => m.FullName.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
             return members.Select(m => new MemberDTO
@@ -30,6 +30,8 @@ namespace GymSystem.BLL.Services.Implementations
                 FullName = m.FullName,
                 Email = m.Email,
                 Phone = m.Phone,
+                DateOfBirth = m.DateOfBirth,
+                PhotoPath = m.PhotoPath,
                 TrainerName = m.Trainer?.FullName ?? "No Trainer",
                 ActivePlanName = m.Subscriptions
                     .Where(s => s.Status == "Active")
@@ -50,6 +52,8 @@ namespace GymSystem.BLL.Services.Implementations
                 FullName = member.FullName,
                 Email = member.Email,
                 Phone = member.Phone,
+                DateOfBirth = member.DateOfBirth,
+                PhotoPath = member.PhotoPath,
                 TrainerName = member.Trainer?.FullName ?? "No Trainer",
                 ActivePlanName = member.Subscriptions
                     .Where(s => s.Status == "Active")
@@ -68,6 +72,7 @@ namespace GymSystem.BLL.Services.Implementations
                 Email = dto.Email,
                 Phone = dto.Phone,
                 DateOfBirth = dto.DateOfBirth,
+                PhotoPath = dto.PhotoPath,
                 TrainerId = dto.TrainerId
             };
 
@@ -84,6 +89,7 @@ namespace GymSystem.BLL.Services.Implementations
                 member.Email = dto.Email;
                 member.Phone = dto.Phone;
                 member.DateOfBirth = (DateTime)dto.DateOfBirth;
+                member.PhotoPath = dto.PhotoPath;
                 member.TrainerId = dto.TrainerId;
 
                 _uow.Members.Update(member);
