@@ -1,127 +1,339 @@
-﻿@* 📁 Views/Classes/Index.cshtml *@
+
 @model IEnumerable<GymSystem.Web.ViewModels.Classes.GymClassListViewModel>
 
 @{
     ViewData["Title"] = "Classes";
+
+    // Category icon mapping
+    string GetCategoryIcon(string category)
+    {
+        var cat = category?.ToLower() ?? "";
+        if (cat.Contains("hiit") || cat.Contains("cardio")) return "bi-lightning-charge-fill";
+        if (cat.Contains("yoga") || cat.Contains("mind") || cat.Contains("body")) return "bi-person-arms-up";
+        if (cat.Contains("cycling") || cat.Contains("spin")) return "bi-bicycle";
+        if (cat.Contains("strength") || cat.Contains("weight")) return "bi-trophy-fill";
+        if (cat.Contains("box")) return "bi-hand-index-thumb-fill";
+        if (cat.Contains("swim") || cat.Contains("aqua")) return "bi-water";
+        if (cat.Contains("dance") || cat.Contains("zumba")) return "bi-music-note-beamed";
+        if (cat.Contains("pilates") || cat.Contains("stretch")) return "bi-flower1";
+        return "bi-activity";
+    }
+
+    // Category color mapping
+    string GetCategoryColor(string category)
+    {
+        var cat = category?.ToLower() ?? "";
+        if (cat.Contains("hiit") || cat.Contains("cardio")) return "#e74c3c";
+        if (cat.Contains("yoga") || cat.Contains("mind") || cat.Contains("body")) return "#e67e22";
+        if (cat.Contains("cycling") || cat.Contains("spin")) return "#004ae8";
+        if (cat.Contains("strength") || cat.Contains("weight")) return "#9e3d00";
+        if (cat.Contains("box")) return "#2c3e50";
+        if (cat.Contains("swim") || cat.Contains("aqua")) return "#1abc9c";
+        if (cat.Contains("dance") || cat.Contains("zumba")) return "#9b59b6";
+        if (cat.Contains("pilates") || cat.Contains("stretch")) return "#27ae60";
+        return "#004ae8";
+    }
+
+    // Capacity bar color
+    string GetCapacityColor(int enrolled, int capacity)
+    {
+        if (capacity == 0) return "var(--surface-high)";
+        var pct = (double)enrolled / capacity * 100;
+        if (pct >= 90) return "#e74c3c";
+        if (pct >= 70) return "#e67e22";
+        return "var(--primary)";
+    }
 }
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>
-            <i class="fas fa-dumbbell me-2"></i>Gym Classes
-        </h2>
-        <a asp-action="Create" class="btn btn-primary rounded-pill text-white px-4 py-2.5 d-flex align-items-center gap-2 btn-action" style="background: var(--primary-gradient); font-weight: 600; font-family: var(--font-display);">
-            <i class="bi bi-plus-lg"></i>Add New Class
-        </a>
-    </div>
+@section Styles {
+    <style>
+        .class-card {
+            background-color: var(--surface-lowest);
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .class-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 24px 48px rgba(28, 27, 27, 0.07);
+        }
 
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.75px;
+            text-transform: uppercase;
+            font-family: var(--font-display);
+        }
+
+        .category-icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .class-name {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+        }
+
+        .trainer-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: #fff;
+            font-family: var(--font-display);
+        }
+
+        .capacity-track {
+            height: 6px;
+            border-radius: 3px;
+            background-color: var(--surface-low);
+            overflow: hidden;
+        }
+        .capacity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .manage-btn {
+            background-color: var(--surface-low);
+            color: var(--text-main);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            width: 100%;
+        }
+        .manage-btn:hover {
+            background-color: var(--surface-high);
+            color: var(--text-main);
+        }
+
+        .filter-select {
+            background-color: var(--surface-low) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 12px 18px !important;
+            font-family: var(--font-body);
+            font-weight: 500;
+            color: var(--text-main) !important;
+            min-width: 200px;
+            appearance: auto;
+            transition: all 0.2s ease;
+        }
+        .filter-select:focus {
+            box-shadow: 0px 0px 0px 4px rgba(0, 74, 232, 0.12) !important;
+            background-color: var(--surface-lowest) !important;
+        }
+
+        .filter-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            opacity: 0.5;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            color: var(--surface-high);
+            display: block;
+            margin-bottom: 1rem;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+
+    @* Alert Messages *@
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success border-0 rounded-3 bg-success bg-opacity-10 text-success p-3 mb-4 d-flex align-items-center gap-2 alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>@TempData["Success"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-danger border-0 rounded-3 bg-danger bg-opacity-10 text-danger p-3 mb-4 d-flex align-items-center gap-2 alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <div>@TempData["Error"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <div class="card shadow">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Class Name</th>
-                            <th>Trainer</th>
-                            <th>Category</th>
-                            <th>Schedule</th>
-                            <th>Capacity</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Any())
-                        {
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <strong>@item.Name</strong>
-                                    </td>
-                                    <td>@item.TrainerName</td>
-                                    <td>
-                                        <span class="badge bg-info">@item.CategoryName</span>
-                                    </td>
-                                    <td>
-                                        <div><i class="far fa-clock me-1"></i>@item.StartTime.ToString("hh:mm tt") - @item.EndTime.ToString("hh:mm tt")</div>
-                                        <small class="text-muted">@item.StartTime.ToString("MMM dd, yyyy")</small>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span>@item.EnrolledCount / @item.Capacity</span>
-                                            @if (item.SpotsLeft <= 5 && item.SpotsLeft > 0)
-                                            {
-                                                <span class="badge bg-warning ms-2">@item.SpotsLeft left</span>
-                                            }
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if (item.SpotsLeft > 0)
-                                        {
-                                            <span class="badge bg-success">Available</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">Full</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a asp-action="Details" asp-route-id="@item.Id"
-                                               class="btn btn-outline-info" title="Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.Id"
-                                               class="btn btn-outline-warning" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button onclick="deleteClass(@item.Id)"
-                                                    class="btn btn-outline-danger" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
-                                        <h5>No classes found</h5>
-                                        <p>Click "Add New Class" to create your first class</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    @* Filter Bar + CTA *@
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-end gap-3 mb-5">
+        <div class="d-flex flex-wrap gap-4">
+            <div>
+                <div class="filter-label">Filter Type</div>
+                <select id="filterType" class="form-select filter-select">
+                    <option value="">All Class Types</option>
+                    @foreach (var cat in Model.Select(c => c.CategoryName).Distinct().OrderBy(c => c))
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <div class="filter-label">Filter Trainer</div>
+                <select id="filterTrainer" class="form-select filter-select">
+                    <option value="">All Trainers</option>
+                    @foreach (var trainer in Model.Select(c => c.TrainerName).Distinct().OrderBy(t => t))
+                    {
+                        <option value="@trainer">@trainer</option>
+                    }
+                </select>
             </div>
         </div>
+        <div>
+            <a asp-action="Create" class="btn btn-primary rounded-pill text-white px-4 py-2 d-flex align-items-center gap-2" style="background: var(--primary-gradient); border: none; font-weight: 600; font-family: var(--font-display);">
+                <i class="bi bi-plus-lg"></i> Create New Class
+            </a>
+        </div>
     </div>
+
+    @* Class Cards Grid *@
+    @if (Model.Any())
+    {
+        <div class="row g-4" id="classGrid">
+            @foreach (var item in Model)
+            {
+                var catColor = GetCategoryColor(item.CategoryName);
+                var catIcon = GetCategoryIcon(item.CategoryName);
+                var capColor = GetCapacityColor(item.EnrolledCount, item.Capacity);
+                var capPercent = item.Capacity > 0 ? (int)Math.Round((double)item.EnrolledCount / item.Capacity * 100) : 0;
+
+                <div class="col-xl-4 col-lg-6 col-md-6 class-grid-item"
+                     data-category="@item.CategoryName"
+                     data-trainer="@item.TrainerName">
+                    <div class="class-card h-100 p-4">
+                        @* Card Header: Category Badge + Icon *@
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="category-badge"
+                                  style="background-color: @(catColor)15; color: @catColor;">
+                                @item.CategoryName.ToUpper()
+                            </span>
+                            <div class="category-icon-circle"
+                                 style="background-color: @(catColor)10; color: @catColor;">
+                                <i class="bi @catIcon"></i>
+                            </div>
+                        </div>
+
+                        @* Class Name *@
+                        <h3 class="class-name mb-3">@item.Name</h3>
+
+                        @* Schedule *@
+                        <div class="d-flex align-items-center gap-2 text-muted mb-2" style="font-size: 0.9rem;">
+                            <i class="bi bi-clock" style="color: @catColor;"></i>
+                            <span>@item.StartTime.ToString("hh:mm tt") — @item.EndTime.ToString("hh:mm tt")</span>
+                        </div>
+
+                        @* Trainer *@
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <div class="trainer-avatar" style="background-color: @catColor;">
+                                @item.TrainerName?.Substring(0, 1).ToUpper()
+                            </div>
+                            <span class="fw-semibold" style="font-size: 0.9rem;">@item.TrainerName</span>
+                        </div>
+
+                        @* Capacity Progress *@
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--font-display);">Capacity</span>
+                                <span class="fw-bold" style="font-size: 0.75rem; color: @capColor; font-family: var(--font-display);">
+                                    @item.EnrolledCount/@item.Capacity FILLED
+                                </span>
+                            </div>
+                            <div class="capacity-track">
+                                <div class="capacity-fill" style="width: @(capPercent)%; background-color: @capColor;"></div>
+                            </div>
+
+                            @* Manage Class Button *@
+                            <a asp-action="Details" asp-route-id="@item.Id" class="manage-btn mt-4">
+                                Manage Class
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card bg-surface-lowest border-0 rounded-4 p-5 text-center" style="box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);">
+            <i class="bi bi-calendar-x empty-state-icon"></i>
+            <h4 class="fw-bold font-display text-main mb-2">No classes found</h4>
+            <p class="text-muted mb-4">Click "Create New Class" to get your schedule started.</p>
+            <div>
+                <a asp-action="Create" class="btn btn-primary rounded-pill text-white px-4 py-2" style="background: var(--primary-gradient); border: none; font-weight: 600; font-family: var(--font-display);">
+                    <i class="bi bi-plus-lg me-1"></i> Create New Class
+                </a>
+            </div>
+        </div>
+    }
 </div>
 
 @section Scripts {
     <script>
+        // Client-side filtering
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterType = document.getElementById("filterType");
+            const filterTrainer = document.getElementById("filterTrainer");
+            const items = document.querySelectorAll(".class-grid-item");
+
+            function applyFilters() {
+                const typeVal = filterType.value.toLowerCase();
+                const trainerVal = filterTrainer.value.toLowerCase();
+
+                items.forEach(item => {
+                    const cat = (item.dataset.category || "").toLowerCase();
+                    const trainer = (item.dataset.trainer || "").toLowerCase();
+                    const matchType = !typeVal || cat === typeVal;
+                    const matchTrainer = !trainerVal || trainer === trainerVal;
+                    item.style.display = (matchType && matchTrainer) ? "" : "none";
+                });
+            }
+
+            filterType.addEventListener("change", applyFilters);
+            filterTrainer.addEventListener("change", applyFilters);
+        });
+
+        // Delete class with SweetAlert
         function deleteClass(id) {
             Swal.fire({
                 title: 'Are you sure?',
