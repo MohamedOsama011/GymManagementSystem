@@ -11,7 +11,7 @@
             box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);
             background-color: var(--surface-lowest);
         }
-        
+
         .form-label {
             font-family: var(--font-display);
             font-weight: 600;
@@ -34,20 +34,20 @@
             outline: none !important;
         }
 
-        .kinetic-input:focus, .kinetic-select:focus {
-            border-color: var(--primary) !important;
-            background-color: var(--surface-lowest) !important;
-            box-shadow: 0px 0px 0px 4px rgba(0, 74, 232, 0.15) !important;
-        }
+            .kinetic-input:focus, .kinetic-select:focus {
+                border-color: var(--primary) !important;
+                background-color: var(--surface-lowest) !important;
+                box-shadow: 0px 0px 0px 4px rgba(0, 74, 232, 0.15) !important;
+            }
 
         .btn-action {
             border: none;
             transition: all 0.2s ease;
         }
-        
-        .btn-action:hover {
-            transform: scale(1.02);
-        }
+
+            .btn-action:hover {
+                transform: scale(1.02);
+            }
     </style>
 }
 
@@ -73,8 +73,8 @@
     <div class="row">
         <div class="col-lg-8">
             <div class="card border-0 rounded-4 p-4 p-md-5 form-card">
-                <form asp-action="Create" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4" ></div>
 
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
@@ -103,6 +103,12 @@
                             <span asp-validation-for="DateOfBirth" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label asp-for="Photo" class="form-label fw-semibold"></label>
+                        <input asp-for="Photo" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        <div class="form-text">Optional. JPG, PNG, or WEBP up to 2 MB.</div>
+                        <span asp-validation-for="Photo" class="text-danger"></span>
+                    </div>
 
                     <div class="mb-5">
                         <label asp-for="TrainerId" class="form-label"></label>
@@ -123,7 +129,7 @@
                 </form>
             </div>
         </div>
-        
+
         @* Sidebar Tip Column for Kinetic Bento Look *@
         <div class="col-lg-4 mt-4 mt-lg-0">
             <div class="card border-0 rounded-4 p-4 bg-surface-low h-100 d-flex flex-column justify-content-between" style="min-height: 350px;">

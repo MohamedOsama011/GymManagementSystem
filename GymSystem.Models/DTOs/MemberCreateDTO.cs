@@ -21,6 +21,8 @@ namespace GymSystem.Models.DTOs
 
         public DateTime DateOfBirth { get; set; }
 
+        public string? PhotoPath { get; set; }
+
         public int? TrainerId { get; set; }
     }
 }
