@@ -1,6 +1,6 @@
-﻿using GymSystem.BLL.Services.Implementations;
 using GymSystem.BLL.Services.Interfaces;
 using GymSystem.Models.DTOs;
+using GymSystem.Web.Services;
 using GymSystem.Web.ViewModels.Members;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,17 +8,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymSystem.Web.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class MembersController : Controller
     {
         private readonly IMemberService _memberService;
         private readonly ITrainerService _trainerService;
+        private readonly IPhotoService _photoService;
+        private const string MemberPhotosFolder = "images/members";
 
-        public MembersController(IMemberService memberService, ITrainerService trainerService)
+        public MembersController(
+            IMemberService memberService,
+            ITrainerService trainerService,
+            IPhotoService photoService)
         {
             _memberService = memberService;
             _trainerService = trainerService;
+            _photoService = photoService;
         }
+
         [Authorize]
         public async Task<IActionResult> Index(string? search)
         {
@@ -30,12 +37,14 @@ namespace GymSystem.Web.Controllers
                 FullName = m.FullName,
                 Email = m.Email,
                 Phone = m.Phone ?? "N/A",
+                PhotoPath = m.PhotoPath,
                 TrainerName = m.TrainerName,
                 ActivePlanName = m.ActivePlanName,
                 SubscriptionStatus = m.SubscriptionStatus
             });
             return View(viewModel);
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -44,11 +53,27 @@ namespace GymSystem.Web.Controllers
 
             return View(viewModel);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(MemberFormViewModel model)
         {
+            string? photoPath = null;
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                try
+                {
+                    var relativePath = await _photoService.SaveAsync(model.Photo, MemberPhotosFolder);
+                    photoPath = $"~/{relativePath.Replace("\\", "/").TrimStart('/')}";
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(nameof(model.Photo), ex.Message);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
+                await PopulateTrainersDropDownList(model);
                 return View(model);
             }
 
@@ -58,6 +83,7 @@ namespace GymSystem.Web.Controllers
                 Email = model.Email,
                 Phone = model.Phone,
                 DateOfBirth = model.DateOfBirth ?? DateTime.Now.AddYears(-20),
+                PhotoPath = photoPath,
                 TrainerId = model.TrainerId
             };
 
@@ -77,6 +103,8 @@ namespace GymSystem.Web.Controllers
                 FullName = memberDto.FullName,
                 Email = memberDto.Email,
                 Phone = memberDto.Phone,
+                DateOfBirth = memberDto.DateOfBirth,
+                ExistingPhotoPath = memberDto.PhotoPath,
             };
 
             await PopulateTrainersDropDownList(viewModel);
@@ -86,6 +114,20 @@ namespace GymSystem.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(MemberFormViewModel model)
         {
+            var photoPath = model.ExistingPhotoPath;
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                try
+                {
+                    var relativePath = await _photoService.SaveAsync(model.Photo, MemberPhotosFolder);
+                    photoPath = $"~/{relativePath.Replace("\\", "/").TrimStart('/')}";
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(nameof(model.Photo), ex.Message);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateTrainersDropDownList(model);
@@ -99,19 +141,29 @@ namespace GymSystem.Web.Controllers
                 Email = model.Email,
                 Phone = model.Phone,
                 DateOfBirth = model.DateOfBirth ?? DateTime.Now,
+                PhotoPath = photoPath,
                 TrainerId = model.TrainerId
             };
 
             await _memberService.UpdateAsync(updateDto);
+
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                _photoService.Delete(NormalizeRelativePath(model.ExistingPhotoPath));
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            var memberDto = await _memberService.GetByIdAsync(id);
             await _memberService.DeleteAsync(id);
+            _photoService.Delete(NormalizeRelativePath(memberDto?.PhotoPath));
+
             return RedirectToAction(nameof(Index));
         }
-        
 
         private async Task PopulateTrainersDropDownList(MemberFormViewModel model)
         {
@@ -121,6 +173,18 @@ namespace GymSystem.Web.Controllers
                 Text = t.FullName,
                 Value = t.Id.ToString()
             });
+        }
+
+        private static string? NormalizeRelativePath(string? storedPath)
+        {
+            if (string.IsNullOrWhiteSpace(storedPath))
+            {
+                return null;
+            }
+
+            return storedPath
+                .Replace("\\", "/")
+                .TrimStart('~', '/');
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace GymSystem.Web.ViewModels.Members
@@ -23,10 +24,14 @@ namespace GymSystem.Web.ViewModels.Members
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
+        [Display(Name = "Member Photo")]
+        public IFormFile? Photo { get; set; }
+
+        public string? ExistingPhotoPath { get; set; }
+
         [Display(Name = "Trainer")]
         public int? TrainerId { get; set; }
 
         public IEnumerable<SelectListItem> Trainers { get; set; } = new List<SelectListItem>();
-
     }
 }

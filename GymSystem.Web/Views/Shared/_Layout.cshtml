@@ -7,67 +7,312 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GymSystem.Web.styles.css" asp-append-version="true" />
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+            :root {
+                --primary: #004ae8;
+                --primary-gradient: linear-gradient(135deg, #004ae8 0%, #3766ff 100%);
+                --bg-canvas: #fcf9f8;
+                --surface-low: #f6f3f2;
+                --surface-lowest: #ffffff;
+                --text-main: #1c1b1b;
+                --surface-high: #ebe7e7;
+                --sidebar-width: 280px;
+                --font-display: 'Lexend', sans-serif;
+                --font-body: 'Manrope', sans-serif;
+            }
+
+            body {
+                background-color: var(--bg-canvas);
+                color: var(--text-main);
+                font-family: var(--font-body);
+                min-height: 100vh;
+                margin: 0;
+                overflow-x: hidden;
+            }
+
+            /* Glassmorphic Sidebar */
+            .sidebar {
+                width: var(--sidebar-width);
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 1030;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.04);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .brand-kinetic {
+                font-family: var(--font-display);
+                font-weight: 800;
+                font-size: 1.5rem;
+                letter-spacing: -0.5px;
+                color: var(--text-main);
+            }
+
+            .brand-studio {
+                font-family: var(--font-display);
+                font-weight: 400;
+                font-size: 1.5rem;
+                letter-spacing: -0.5px;
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            /* Sidebar Links & Active State */
+            .sidebar-link {
+                display: flex;
+                align-items: center;
+                padding: 14px 24px;
+                color: var(--text-main);
+                text-decoration: none;
+                font-weight: 500;
+                position: relative;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                border-radius: 12px;
+                margin: 4px 16px;
+                opacity: 0.7;
+            }
+
+                .sidebar-link:hover {
+                    opacity: 1;
+                    background-color: var(--surface-low);
+                    color: var(--text-main);
+                }
+
+                .sidebar-link.active {
+                    opacity: 1;
+                    font-weight: 700;
+                    font-family: var(--font-display);
+                    background-color: var(--surface-low);
+                    color: var(--text-main);
+                }
+
+                    .sidebar-link.active::before {
+                        content: '';
+                        position: absolute;
+                        left: 0;
+                        top: 20%;
+                        bottom: 20%;
+                        width: 4px;
+                        background: var(--primary);
+                        border-radius: 4px;
+                    }
+
+            /* Layout Structure */
+            .main-wrapper {
+                margin-left: var(--sidebar-width);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            /* Header / Top Navbar without standard 1px borders */
+            .top-navbar {
+                background-color: transparent;
+                padding: 24px 40px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .content-container {
+                padding: 0 40px 40px 40px;
+                flex-grow: 1;
+            }
+
+            .footer-clean {
+                padding: 24px 40px;
+                background-color: var(--surface-low);
+                color: var(--text-main);
+                opacity: 0.7;
+                font-size: 0.875rem;
+            }
+
+            .btn-logout {
+                background-color: var(--surface-low);
+                color: var(--text-main);
+                border: none;
+                border-radius: 8px;
+                font-size: 0.875rem;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                padding: 8px 16px;
+            }
+
+                .btn-logout:hover {
+                    background-color: var(--surface-high);
+                    color: var(--text-main);
+                }
+
+            .bg-surface-low {
+                background-color: var(--surface-low) !important;
+            }
+
+            .bg-surface-lowest {
+                background-color: var(--surface-lowest) !important;
+            }
+
+            .bg-surface-high {
+                background-color: var(--surface-high) !important;
+            }
+
+            /* Mobile View Styles */
+            @@media (max-width: 991.98px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                }
+
+                    .sidebar.show {
+                        transform: translateX(0);
+                    }
+
+                .main-wrapper {
+                    margin-left: 0;
+                }
+
+                .top-navbar {
+                    padding: 20px;
+                }
+
+                .content-container {
+                    padding: 0 20px 20px 20px;
+                }
+            }
+    </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GymSystem.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-brand-wrapper d-flex align-items-center px-4 py-4">
+            <a class="sidebar-brand text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-kinetic">Kinetic</span><span class="brand-studio">Studio</span>
+            </a>
+        </div>
+
+        <div class="nav-list d-flex flex-column gap-1">
+            <a class="sidebar-link" asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-grid-1x2-fill me-3"></i>Dashboard
+            </a>
+            <a class="sidebar-link" asp-controller="Members" asp-action="Index">
+                <i class="bi bi-people-fill me-3"></i>Members
+            </a>
+            <a class="sidebar-link" asp-controller="Trainers" asp-action="Index">
+                <i class="bi bi-person-workspace me-3"></i>Trainers
+            </a>
+            <a class="sidebar-link" asp-controller="Classes" asp-action="Index">
+                <i class="bi bi-calendar3 me-3"></i>Classes
+            </a>
+            <a class="sidebar-link" asp-controller="Attendance" asp-action="Index">
+                <i class="bi bi-clipboard-check-fill me-3"></i>Attendance
+            </a>
+            <a class="sidebar-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                <i class="bi bi-shield-lock-fill me-3"></i>Privacy
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn border-0 p-0 me-3 d-lg-none" type="button" id="sidebar-toggle">
+                    <i class="bi bi-list fs-2"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Members" asp-action="Index">Members</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Trainers" asp-action="Index">Trainers</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Classes" asp-action="Index">Classes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Attendance" asp-action="Index">Attendance</a>
-                        </li>
-                        
-                    </ul>
-                </div>
+                <h1 class="h4 mb-0 font-weight-bold" style="font-family: var(--font-display); font-weight: 700;">
+                    @ViewData["Title"]
+                </h1>
             </div>
-            @if (User.Identity!.IsAuthenticated)
-            {
-                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-sm btn-outline-dark">
-                        Sign out
-                    </button>
-                </form>
-                <span class="text-white-50 small ms-3">@User.Identity.Name</span>
-            }
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+            <div class="d-flex align-items-center gap-3">
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <span class="text-muted small me-2">Welcome, @User.Identity.Name</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-logout d-flex align-items-center gap-2">
+                            <i class="bi bi-box-arrow-right"></i> Sign out
+                        </button>
+                    </form>
+                }
+            </div>
+        </header>
+
+        <main role="main" class="content-container">
             @RenderBody()
         </main>
+
+        <footer class="footer-clean mt-auto">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>&copy; 2026 - Kinetic Studio</span>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">Privacy</a>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - GymSystem.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        // Sidebar Mobile Toggle
+        const sidebar = document.getElementById("sidebar");
+        const toggle = document.getElementById("sidebar-toggle");
+
+        if (toggle && sidebar) {
+        toggle.addEventListener("click", function (e) {
+        e.stopPropagation();
+        sidebar.classList.toggle("show");
+        });
+
+        document.addEventListener("click", function (e) {
+        if (!sidebar.contains(e.target) && sidebar.classList.contains("show")) {
+        sidebar.classList.remove("show");
+        }
+        });
+        }
+
+        // Active Menu Link Detection
+        const currentPath = window.location.pathname.toLowerCase();
+        const navLinks = document.querySelectorAll(".sidebar-link");
+
+        let activeFound = false;
+        navLinks.forEach(link => {
+        const href = link.getAttribute("href");
+        if (href) {
+        const linkPath = href.toLowerCase();
+        if (linkPath === currentPath ||
+        (linkPath !== "/" && currentPath.startsWith(linkPath))) {
+        link.classList.add("active");
+        activeFound = true;
+        } else {
+        link.classList.remove("active");
+        }
+        }
+        });
+
+        // Fallback for root path matching dashboard
+        if (!activeFound && navLinks.length > 0) {
+        navLinks.forEach(link => {
+        const href = link.getAttribute("href");
+        if (href === "/" || href.endsWith("/Home") || href.endsWith("/Home/Index")) {
+        link.classList.add("active");
+        }
+        });
+        }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
