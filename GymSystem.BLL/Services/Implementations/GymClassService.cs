@@ -26,6 +26,7 @@ namespace GymSystem.BLL.Services.Implementations
                 Id = c.Id,
                 Name = c.Name,
                 TrainerName = c.Trainer.FullName,
+                TrainerPhotoPath = c.Trainer.PhotoPath,
                 CategoryName = c.Category.Name,
                 StartTime = c.StartTime,
                 EndTime = c.EndTime,
@@ -148,6 +149,7 @@ namespace GymSystem.BLL.Services.Implementations
                 Id = gymClass.Id,
                 Name = gymClass.Name,
                 TrainerName = gymClass.Trainer?.FullName,
+                TrainerPhotoPath = gymClass.Trainer?.PhotoPath,
                 CategoryName = gymClass.Category?.Name,
                 StartTime = gymClass.StartTime,
                 EndTime = gymClass.EndTime,
@@ -158,6 +160,7 @@ namespace GymSystem.BLL.Services.Implementations
                     MemberId = ce.MemberId,
                     MemberName = ce.Member?.FullName,
                     MemberEmail = ce.Member?.Email,
+                    MemberPhotoPath = ce.Member?.PhotoPath,
                     EnrolledAt = ce.EnrolledAt
                 }).ToList(),
                 AvailableMembers = availableMembers

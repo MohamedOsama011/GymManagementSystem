@@ -26,6 +26,7 @@ namespace GymSystem.Web.Controllers
                 Id = dto.Id,
                 Name = dto.Name,
                 TrainerName = dto.TrainerName,
+                TrainerPhotoPath = dto.TrainerPhotoPath,
                 CategoryName = dto.CategoryName,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
@@ -128,6 +129,7 @@ namespace GymSystem.Web.Controllers
                 Id = dto.Id,
                 Name = dto.Name,
                 TrainerName = dto.TrainerName,
+                TrainerPhotoPath = dto.TrainerPhotoPath,
                 CategoryName = dto.CategoryName,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
@@ -138,6 +140,7 @@ namespace GymSystem.Web.Controllers
                     MemberId = em.MemberId,
                     MemberName = em.MemberName,
                     MemberEmail = em.MemberEmail,
+                    MemberPhotoPath = em.MemberPhotoPath,
                     EnrolledAt = em.EnrolledAt
                 }).ToList(),
                 AvailableMembers = dto.AvailableMembers.Select(am =>

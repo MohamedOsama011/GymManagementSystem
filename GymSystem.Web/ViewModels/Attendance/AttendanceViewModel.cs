@@ -10,9 +10,12 @@
 
         public bool IsOpen => CheckOutTime == null;
 
-        public string StatusBadgeClass => IsOpen ? "bg-success" : "bg-secondary";
+        public string StatusBadgeClass => IsOpen
+            ? "bg-success bg-opacity-10 text-success"
+            : "bg-secondary bg-opacity-10 text-secondary";
+
         public string StatusText => IsOpen ? "Active" : "Completed";
-        public string StatusIcon => IsOpen ? "fa-user-check" : "fa-user-clock";
+        public string StatusIcon => IsOpen ? "bi-person-check-fill" : "bi-clock-history";
 
         public string Duration
         {
@@ -33,7 +36,5 @@
         public string FormattedCheckIn => CheckInTime.ToString("hh:mm tt");
         public string FormattedCheckOut => CheckOutTime?.ToString("hh:mm tt") ?? "-";
         public string FormattedDate => CheckInTime.ToString("MMM dd, yyyy");
-
-        public string RowClass => IsOpen ? "table-success" : "";
     }
 }

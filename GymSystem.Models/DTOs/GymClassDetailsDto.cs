@@ -11,6 +11,7 @@ namespace GymSystem.Models.DTOs
         public int Id { get; set; }
         public string Name { get; set; }
         public string TrainerName { get; set; }
+        public string? TrainerPhotoPath { get; set; }
         public string CategoryName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
@@ -25,6 +26,7 @@ namespace GymSystem.Models.DTOs
         public int MemberId { get; set; }
         public string MemberName { get; set; }
         public string MemberEmail { get; set; }
+        public string? MemberPhotoPath { get; set; }
         public DateTime EnrolledAt { get; set; }
     }
 }

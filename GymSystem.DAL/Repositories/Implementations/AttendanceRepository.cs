@@ -16,6 +16,7 @@ namespace GymSystem.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<AttendanceRecord>> GetByMemberAsync(int memberId)
             => await _dbSet
+                .Include(a => a.Member)
                 .Where(a => a.MemberId == memberId)
                 .OrderByDescending(a => a.CheckInTime)
                 .ToListAsync();

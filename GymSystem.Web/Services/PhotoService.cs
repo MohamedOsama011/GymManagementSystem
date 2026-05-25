@@ -32,6 +32,11 @@
 
         public void Delete(string? relativePath)
         {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return;
+            }
+
             var fullPath = Path.Combine(_env.WebRootPath, relativePath);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);

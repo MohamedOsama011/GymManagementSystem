@@ -10,7 +10,8 @@ namespace GymSystem.BLL.Services.Interfaces
     public interface IAttendanceService
     {
         Task<IEnumerable<AttendanceRecordDto>> GetTodayAsync(); 
-        Task<IEnumerable<AttendanceRecordDto>> GetByMemberAsync(int memberId); 
+        Task<IEnumerable<AttendanceRecordDto>> GetByMemberAsync(int memberId);
+        Task<string> GetMemberNameAsync(int memberId);
         Task<IEnumerable<AttendanceRecordDto>> GetFilteredAsync(AttendanceFilterDto filter); 
         Task<CheckInDto> GetCheckInDataAsync(); 
         Task<CheckInResultDto> CheckInAsync(int memberId); 

@@ -24,6 +24,12 @@ namespace GymSystem.BLL.Services.Implementations
             return records.Select(MapToDto);
         }
 
+        public async Task<string> GetMemberNameAsync(int memberId)
+        {
+            var member = await _uow.Members.GetByIdAsync(memberId);
+            return member?.FullName ?? "Unknown";
+        }
+
         public async Task<IEnumerable<AttendanceRecordDto>> GetFilteredAsync(AttendanceFilterDto filter)
         {
             var query = await _uow.Attendance.GetAllAsync();

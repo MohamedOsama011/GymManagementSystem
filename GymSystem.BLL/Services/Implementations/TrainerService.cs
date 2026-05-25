@@ -20,19 +20,37 @@ namespace GymSystem.BLL.Services.Implementations
         public async Task<IEnumerable<TrainerDto>> GetAllAsync()
         {
             var trainers = await _uow.Trainers.GetAllWithSpecialtiesAsync();
+            var weekStart = DateTime.Today.AddDays(-6);
+            var weekEnd = DateTime.Today.AddDays(1);
 
             return trainers
                 .OrderBy(t => t.FullName)
-                .Select(t => new TrainerDto
+                .Select(t =>
                 {
-                    Id = t.Id,
-                    FullName = t.FullName,
-                    JobTitle = t.JobTitle,
-                    MemberCount = t.Members.Count,
-                    Specialties = t.TrainerSpecialties
-                        .Select(ts => ts.Specialty.Name)
-                        .OrderBy(name => name)
-                        .ToList()
+                    var weeklyClasses = t.GymClasses
+                        .Where(c => c.StartTime >= weekStart && c.StartTime < weekEnd)
+                        .ToList();
+                    var weeklyHours = weeklyClasses.Sum(c => (c.EndTime - c.StartTime).TotalHours);
+                    var classCount = t.GymClasses.Count;
+                    var memberCount = t.Members.Count;
+
+                    return new TrainerDto
+                    {
+                        Id = t.Id,
+                        FullName = t.FullName,
+                        JobTitle = t.JobTitle,
+                        PhotoPath = t.PhotoPath,
+                        MemberCount = memberCount,
+                        ClassCount = classCount,
+                        WeeklyHours = Math.Round(weeklyHours, 1),
+                        WeeklyHoursMax = 40,
+                        Rating = Math.Round(Math.Min(5.0, 4.2 + memberCount * 0.04 + classCount * 0.02), 1),
+                        IsActive = weeklyHours > 0 || memberCount > 0,
+                        Specialties = t.TrainerSpecialties
+                            .Select(ts => ts.Specialty.Name)
+                            .OrderBy(name => name)
+                            .ToList()
+                    };
                 });
         }
 
@@ -54,6 +72,7 @@ namespace GymSystem.BLL.Services.Implementations
                 Id = trainer.Id,
                 FullName = trainer.FullName,
                 JobTitle = trainer.JobTitle,
+                PhotoPath = trainer.PhotoPath,
                 SelectedSpecialtyIds = trainer.TrainerSpecialties
                     .Select(ts => ts.SpecialtyId)
                     .ToList()
@@ -78,7 +97,8 @@ namespace GymSystem.BLL.Services.Implementations
             var trainer = new Trainer
             {
                 FullName = model.FullName,
-                JobTitle = model.JobTitle
+                JobTitle = model.JobTitle,
+                PhotoPath = model.PhotoPath
             };
 
             await _uow.Trainers.AddAsync(trainer);
@@ -97,6 +117,7 @@ namespace GymSystem.BLL.Services.Implementations
 
             trainer.FullName = model.FullName;
             trainer.JobTitle = model.JobTitle;
+            trainer.PhotoPath = model.PhotoPath;
 
             _uow.Trainers.Update(trainer);
             await SyncTrainerSpecialtiesAsync(trainer.Id, model.SelectedSpecialtyIds);

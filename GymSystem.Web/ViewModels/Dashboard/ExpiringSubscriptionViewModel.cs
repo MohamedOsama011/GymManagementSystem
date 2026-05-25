@@ -26,9 +26,9 @@
 
         public string UrgencyIcon => DaysRemaining switch
         {
-            0 => "fa-exclamation-circle",
-            <= 3 => "fa-exclamation-triangle",
-            _ => "fa-clock"
+            0 => "bi-exclamation-circle-fill",
+            <= 3 => "bi-exclamation-triangle-fill",
+            _ => "bi-clock-fill"
         };
 
         public string EndDateFormatted => EndDate.ToString("MMM dd, yyyy");

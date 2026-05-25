@@ -1,5 +1,6 @@
 using GymSystem.BLL.Services.Interfaces;
 using GymSystem.Models.DTOs;
+using GymSystem.Web.Services;
 using GymSystem.Web.ViewModels.Trainers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,13 @@ namespace GymSystem.Web.Controllers
     public class TrainersController : Controller
     {
         private readonly ITrainerService _trainerService;
+        private readonly IPhotoService _photoService;
+        private const string TrainerPhotosFolder = "images/trainers";
 
-        public TrainersController(ITrainerService trainerService)
+        public TrainersController(ITrainerService trainerService, IPhotoService photoService)
         {
             _trainerService = trainerService;
+            _photoService = photoService;
         }
 
         public async Task<IActionResult> Index()
@@ -26,7 +30,13 @@ namespace GymSystem.Web.Controllers
                 Id = t.Id,
                 FullName = t.FullName,
                 JobTitle = t.JobTitle,
+                PhotoPath = t.PhotoPath,
                 MemberCount = t.MemberCount,
+                ClassCount = t.ClassCount,
+                WeeklyHours = t.WeeklyHours,
+                WeeklyHoursMax = t.WeeklyHoursMax,
+                Rating = t.Rating,
+                IsActive = t.IsActive,
                 Specialties = t.Specialties
             });
 
@@ -41,6 +51,7 @@ namespace GymSystem.Web.Controllers
             {
                 FullName = model?.FullName ?? string.Empty,
                 JobTitle = model?.JobTitle ?? string.Empty,
+                ExistingPhotoPath = model?.PhotoPath,
                 SelectedSpecialtyIds = model?.SelectedSpecialtyIds ?? new List<int>()
             };
 
@@ -52,6 +63,20 @@ namespace GymSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TrainerFormViewModel model)
         {
+            string? photoPath = null;
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                try
+                {
+                    var relativePath = await _photoService.SaveAsync(model.Photo, TrainerPhotosFolder);
+                    photoPath = $"~/{relativePath.Replace("\\", "/").TrimStart('/')}";
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(nameof(model.Photo), ex.Message);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateSpecialtiesDropDownList(model);
@@ -62,6 +87,7 @@ namespace GymSystem.Web.Controllers
             {
                 FullName = model.FullName,
                 JobTitle = model.JobTitle,
+                PhotoPath = photoPath,
                 SelectedSpecialtyIds = model.SelectedSpecialtyIds
             });
 
@@ -82,6 +108,7 @@ namespace GymSystem.Web.Controllers
                 Id = trainer.Id,
                 FullName = trainer.FullName,
                 JobTitle = trainer.JobTitle,
+                ExistingPhotoPath = trainer.PhotoPath,
                 SelectedSpecialtyIds = trainer.SelectedSpecialtyIds
             };
 
@@ -93,6 +120,20 @@ namespace GymSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TrainerFormViewModel model)
         {
+            var photoPath = model.ExistingPhotoPath;
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                try
+                {
+                    var relativePath = await _photoService.SaveAsync(model.Photo, TrainerPhotosFolder);
+                    photoPath = $"~/{relativePath.Replace("\\", "/").TrimStart('/')}";
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(nameof(model.Photo), ex.Message);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateSpecialtiesDropDownList(model);
@@ -104,8 +145,14 @@ namespace GymSystem.Web.Controllers
                 Id = model.Id,
                 FullName = model.FullName,
                 JobTitle = model.JobTitle,
+                PhotoPath = photoPath,
                 SelectedSpecialtyIds = model.SelectedSpecialtyIds
             });
+
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                _photoService.Delete(NormalizeRelativePath(model.ExistingPhotoPath));
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -114,7 +161,9 @@ namespace GymSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            var trainer = await _trainerService.GetAsync(id);
             await _trainerService.DeleteAsync(id);
+            _photoService.Delete(NormalizeRelativePath(trainer?.PhotoPath));
             return RedirectToAction(nameof(Index));
         }
 
@@ -126,6 +175,18 @@ namespace GymSystem.Web.Controllers
                 Value = s.Id.ToString(),
                 Text = s.Name
             }).ToList();
+        }
+
+        private static string? NormalizeRelativePath(string? storedPath)
+        {
+            if (string.IsNullOrWhiteSpace(storedPath))
+            {
+                return null;
+            }
+
+            return storedPath
+                .Replace("\\", "/")
+                .TrimStart('~', '/');
         }
     }
 }

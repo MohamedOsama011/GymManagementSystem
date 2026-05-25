@@ -21,7 +21,7 @@
 
     <div class="table-responsive shadow rounded">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
+            <thead >
                 <tr>
                     <th>Member</th>
                     <th>Plan</th>
@@ -36,11 +36,47 @@
                 {
                     <tr>
                         <td>@item.MemberName</td>
-                        <td>@item.PlanName</td>
+                        <td>
+                                @if (item.PlanName == "Premium")
+                                {
+                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-semibold">
+                                         @item.PlanName
+                                    </span>
+                                }
+                                else if (item.PlanName == "Day Pass")
+                                {
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2 fw-semibold">
+                                        @item.PlanName
+                                    </span>
+                                }
+                                else if (item.PlanName == "Standard")
+                                {
+                                    <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2 fw-semibold">
+                                        @item.PlanName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2 fw-semibold">
+                                        Inactive
+                                    </span>
+                                }
+                            </td>
                         <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
                         <td>@item.EndDate.ToString("yyyy-MM-dd")</td>
                         <td>
-                            <span class="badge bg-warning text-dark">@item.Status</span>
+                            @if (item.Status == "Active")
+                            {
+                                <span class=" badge bg-opacity-10 text-success px-3 py-2 fw-semibold">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge  bg-opacity-10 text-danger px-3 py-2 fw-semibold">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Inactive
+                                </span>
+                            }
                         </td>
                         <td class="text-center">
                             <a asp-action="Assign" asp-route-memberId="@item.MemberId" class="btn btn-sm btn-outline-primary">Assign</a>

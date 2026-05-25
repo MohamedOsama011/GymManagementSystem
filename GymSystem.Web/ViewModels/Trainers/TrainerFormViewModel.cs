@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +17,11 @@ namespace GymSystem.Web.ViewModels.Trainers
         [StringLength(100)]
         [Display(Name = "Job Title")]
         public string JobTitle { get; set; } = string.Empty;
+
+        [Display(Name = "Trainer Photo")]
+        public IFormFile? Photo { get; set; }
+
+        public string? ExistingPhotoPath { get; set; }
 
         [Display(Name = "Specialties")]
         public List<int> SelectedSpecialtyIds { get; set; } = new();

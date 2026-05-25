@@ -94,9 +94,9 @@
         }
 
         .trainer-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            border-radius: .3rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -237,6 +237,14 @@
                 var catIcon = GetCategoryIcon(item.CategoryName);
                 var capColor = GetCapacityColor(item.EnrolledCount, item.Capacity);
                 var capPercent = item.Capacity > 0 ? (int)Math.Round((double)item.EnrolledCount / item.Capacity * 100) : 0;
+                var trainerPhotoUrl = string.IsNullOrWhiteSpace(item.TrainerPhotoPath)
+                    ? null
+                    : Url.Content(item.TrainerPhotoPath.StartsWith("~/", StringComparison.Ordinal)
+                        ? item.TrainerPhotoPath
+                        : $"~{item.TrainerPhotoPath}");
+                var trainerInitial = string.IsNullOrWhiteSpace(item.TrainerName)
+                    ? "?"
+                    : item.TrainerName.Trim().Substring(0, 1).ToUpper();
 
                 <div class="col-xl-4 col-lg-6 col-md-6 class-grid-item"
                      data-category="@item.CategoryName"
@@ -264,10 +272,20 @@
                         </div>
 
                         @* Trainer *@
-                        <div class="d-flex align-items-center gap-2 mb-4">
-                            <div class="trainer-avatar" style="background-color: @catColor;">
-                                @item.TrainerName?.Substring(0, 1).ToUpper()
-                            </div>
+                        <div class="d-flex align-items-center gap-2 mb-4 mt-3">
+                            @if (!string.IsNullOrWhiteSpace(trainerPhotoUrl))
+                            {
+                                <img src="@trainerPhotoUrl"
+                                     alt="@item.TrainerName photo"
+                                     class="rounded-3 border"
+                                     style="width: 38px; height: 38px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="trainer-avatar" style="background-color: @catColor;">
+                                    @trainerInitial
+                                </div>
+                            }
                             <span class="fw-semibold" style="font-size: 0.9rem;">@item.TrainerName</span>
                         </div>
 
@@ -331,6 +349,16 @@
 
             filterType.addEventListener("change", applyFilters);
             filterTrainer.addEventListener("change", applyFilters);
+
+            const pendingTrainer = sessionStorage.getItem("classesFilterTrainer");
+            if (pendingTrainer && filterTrainer) {
+                const match = Array.from(filterTrainer.options).find(o => o.value === pendingTrainer);
+                if (match) {
+                    filterTrainer.value = pendingTrainer;
+                    applyFilters();
+                }
+                sessionStorage.removeItem("classesFilterTrainer");
+            }
         });
 
         // Delete class with SweetAlert

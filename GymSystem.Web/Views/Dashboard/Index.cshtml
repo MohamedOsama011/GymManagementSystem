@@ -5,26 +5,139 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        .stat-card {
+        .dashboard-stat-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--surface-lowest);
+            border: none;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: 100%;
+            min-height: 196px;
+            box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
         }
 
-            .stat-card:hover {
-                transform: translateY(-4px);
-            }
+        .dashboard-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 24px 48px rgba(28, 27, 27, 0.07);
+            color: inherit;
+        }
 
-        .stat-icon {
-            width: 48px;
-            height: 48px;
+        .dashboard-stat-card--hero {
+            min-height: 220px;
+            background: linear-gradient(145deg, var(--surface-lowest) 55%, rgba(0, 74, 232, 0.06) 100%);
+        }
+
+        .dashboard-stat-card--hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .stat-card-watermark {
+            position: absolute;
+            right: -0.5rem;
+            bottom: -0.75rem;
+            font-size: 6.5rem;
+            line-height: 1;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+
+        .stat-label {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            color: var(--text-main);
+            opacity: 0.55;
+        }
+
+        .stat-icon-wrap {
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
-            transition: all 0.2s ease;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        .stat-kpi {
+            font-family: var(--font-display);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--text-main);
+            margin: 0.5rem 0 0.25rem;
+            line-height: 1.1;
+        }
+
+        .stat-kpi--hero {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+        }
+
+        .stat-kpi--md {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+        }
+
+        .stat-meta {
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            color: var(--text-main);
+            opacity: 0.55;
+            margin-bottom: 0;
+        }
+
+        .stat-progress-track {
+            height: 6px;
+            border-radius: 3px;
+            background-color: var(--surface-low);
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .stat-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-cta {
+            margin-top: auto;
+            padding-top: 1.25rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: gap 0.2s ease;
+        }
+
+        .dashboard-stat-card:hover .stat-cta {
+            gap: 0.55rem;
+        }
+
+        .stat-badge {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.25px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
         }
 
         .member-list-item {
@@ -101,109 +214,102 @@
         </div>
     }
 
-    @* Bento Stats Cards *@
+    @{
+        var subscriptionPct = Model.TotalMembers > 0
+            ? Math.Min(100, (double)Model.ActiveSubscriptions / Model.TotalMembers * 100)
+            : 0;
+        var attendancePct = Model.TotalMembers > 0
+            ? Math.Min(100, (double)Model.TodayAttendance / Model.TotalMembers * 100)
+            : 0;
+        var classesFill = Model.TotalClasses > 0 ? 100.0 : 0.0;
+    }
+
+    @* KPI Stats — Power column + balanced row *@
     <div class="row g-4 mb-5">
-        @* Total Members Card - Large Power Card *@
-        <div class="col-xl-4 col-lg-6 col-md-12">
-            <div class="card bg-surface-lowest border-0 rounded-4 p-4 h-100 position-relative overflow-hidden" style="box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03); min-height: 200px;">
-                <div class="position-absolute end-0 bottom-0 opacity-10" style="font-size: 8rem; line-height: 1; transform: translate(15%, 20%); color: var(--primary);">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <div class="card-body p-2 d-flex flex-column h-100 justify-content-between position-relative z-3">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted fw-bold text-uppercase tracking-wider small" style="font-family: var(--font-body);">Total Members</span>
-                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
-                                <i class="bi bi-arrow-up-right me-1"></i>Growth
-                            </span>
-                        </div>
-                        <h2 class="display-4 fw-extrabold text-main mb-2" style="font-family: var(--font-display); letter-spacing: -2px;">
-                            @Model.TotalMembers.ToString("N0")
-                        </h2>
-                        <p class="text-muted mb-0">
-                            @Model.MemberGrowthIndicator registered
-                        </p>
+        @* Total Members — hero power card *@
+        <div class="col-xl-5 col-lg-6">
+            <a asp-controller="Members" asp-action="Index" class="dashboard-stat-card dashboard-stat-card--hero">
+                <i class="bi bi-people-fill stat-card-watermark text-primary"></i>
+                <div class="position-relative z-1 d-flex flex-column h-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="stat-label">Total Members</span>
+                        <span class="stat-badge bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-arrow-up-right me-1"></i>Directory
+                        </span>
                     </div>
-                    <div class="mt-4">
-                        <a asp-controller="Members" asp-action="Index" class="btn btn-link text-primary p-0 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
-                            Explore directory <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <h2 class="stat-kpi stat-kpi--hero text-primary">@Model.TotalMembers.ToString("N0")</h2>
+                    <p class="stat-meta">@Model.MemberGrowthIndicator Members registered in your gym</p>
+                    @* <div class="stat-progress-track">
+                        <div class="stat-progress-fill" style="width: 100%; background: var(--primary-gradient);"></div>
+                    </div> *@
+                    <span class="stat-cta text-primary">Explore directory <i class="bi bi-arrow-right"></i></span>
                 </div>
-            </div>
+            </a>
         </div>
 
-        @* Active Subscriptions Card *@
-        <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="card bg-surface-lowest border-0 rounded-4 p-4 h-100 d-flex flex-column justify-content-between" style="box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);">
-                <div class="card-body p-2 d-flex flex-column h-100 justify-content-between">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted fw-bold text-uppercase tracking-wider small">Active Subscriptions</span>
-                            <div class="bg-success bg-opacity-10 text-success p-2 rounded-3">
-                                <i class="bi bi-check-circle-fill"></i>
+        <div class="col-xl-7 col-lg-6">
+            <div class="row g-4 h-100">
+                @* Active Subscriptions *@
+                <div class="col-md-4 col-sm-6">
+                    <a asp-controller="Subscriptions" asp-action="Index" class="dashboard-stat-card">
+                        <i class="bi bi-card-checklist stat-card-watermark text-success"></i>
+                        <div class="position-relative z-1 d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="stat-label">Active Subscriptions</span>
+                                <div class="stat-icon-wrap bg-success bg-opacity-10 text-success">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
                             </div>
+                            <h3 class="stat-kpi stat-kpi--md text-success">@Model.ActiveSubscriptions.ToString("N0")</h3>
+                            <p class="stat-meta">@Model.SubscriptionRate of members</p>
+                            @* <div class="stat-progress-track">
+                                <div class="stat-progress-fill bg-success" style="width: @(subscriptionPct.ToString("F0"))%;"></div>
+                            </div> *@
+                            <span class="stat-cta text-success">Manage plans <i class="bi bi-arrow-right"></i></span>
                         </div>
-                        <h3 class="display-5 fw-bold text-success mb-2" style="font-family: var(--font-display); letter-spacing: -1px;">
-                            @Model.ActiveSubscriptions.ToString("N0")
-                        </h3>
-                        <p class="text-muted small mb-0">@Model.SubscriptionRate of total</p>
-                    </div>
-                    <div class="mt-4">
-                        <a asp-controller="Subscriptions" asp-action="Index" class="btn btn-link text-success p-0 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
-                            Manage plans <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    </a>
                 </div>
-            </div>
-        </div>
 
-        @* Today's Check-ins Card *@
-        <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="card bg-surface-lowest border-0 rounded-4 p-4 h-100 d-flex flex-column justify-content-between" style="box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);">
-                <div class="card-body p-2 d-flex flex-column h-100 justify-content-between">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted fw-bold text-uppercase tracking-wider small">Today's Check-ins</span>
-                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
-                                <i class="bi bi-sign-in-fill"></i>
+                @* Today's Check-ins *@
+                <div class="col-md-4 col-sm-6">
+                    <a asp-controller="Attendance" asp-action="Index" class="dashboard-stat-card">
+                        <i class="bi bi-box-arrow-in-right stat-card-watermark text-primary"></i>
+                        <div class="position-relative z-1 d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="stat-label">Today's Check-ins</span>
+                                <div class="stat-icon-wrap bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-clipboard-check-fill"></i>
+                                </div>
                             </div>
+                            <h3 class="stat-kpi stat-kpi--md text-primary">@Model.TodayAttendance.ToString("N0")</h3>
+                            <p class="stat-meta">@Model.AttendanceRate attendee rate</p>
+                            @* <div class="stat-progress-track">
+                                <div class="stat-progress-fill" style="width: @(attendancePct.ToString("F0"))%; background: var(--primary-gradient);"></div>
+                            </div> *@
+                            <span class="stat-cta text-primary">View attendance <i class="bi bi-arrow-right"></i></span>
                         </div>
-                        <h3 class="display-5 fw-bold text-primary mb-2" style="font-family: var(--font-display); letter-spacing: -1px;">
-                            @Model.TodayAttendance.ToString("N0")
-                        </h3>
-                        <p class="text-muted small mb-0">@Model.AttendanceRate attendee rate</p>
-                    </div>
-                    <div class="mt-4">
-                        <a asp-controller="Attendance" asp-action="Index" class="btn btn-link text-primary p-0 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
-                            View attendance <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    </a>
                 </div>
-            </div>
-        </div>
 
-        @* Total Classes Card *@
-        <div class="col-xl-2 col-lg-6 col-md-12">
-            <div class="card bg-surface-lowest border-0 rounded-4 p-4 h-100 d-flex flex-column justify-content-between" style="box-shadow: 0px 20px 40px rgba(28, 27, 27, 0.03);">
-                <div class="card-body p-2 d-flex flex-column h-100 justify-content-between">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted fw-bold text-uppercase tracking-wider small">Total Classes</span>
-                            <div class="bg-info bg-opacity-10 text-info p-2 rounded-3">
-                                <i class="bi bi-calendar3"></i>
+                @* Total Classes *@
+                <div class="col-md-4 col-sm-12">
+                    <a asp-controller="Classes" asp-action="Index" class="dashboard-stat-card">
+                        <i class="bi bi-calendar3 stat-card-watermark" style="color: #9e3d00;"></i>
+                        <div class="position-relative z-1 d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="stat-label">Total Classes</span>
+                                <div class="stat-icon-wrap" style="background-color: rgba(158, 61, 0, 0.12); color: #9e3d00;">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                </div>
                             </div>
+                            <h3 class="stat-kpi stat-kpi--md" style="color: #9e3d00;">@Model.TotalClasses.ToString("N0")</h3>
+                            <p class="stat-meta">Scheduled &amp; active</p>
+                            @* <div class="stat-progress-track">
+                                <div class="stat-progress-fill" style="width: @(classesFill.ToString("F0"))%; background-color: #9e3d00;"></div>
+                            </div> *@
+                            <span class="stat-cta" style="color: #9e3d00;">Manage classes <i class="bi bi-arrow-right"></i></span>
                         </div>
-                        <h3 class="display-5 fw-bold text-info mb-2" style="font-family: var(--font-display); letter-spacing: -1px;">
-                            @Model.TotalClasses.ToString("N0")
-                        </h3>
-                        <p class="text-muted small mb-0">Scheduled active</p>
-                    </div>
-                    <div class="mt-4">
-                        <a asp-controller="Classes" asp-action="Index" class="btn btn-link text-info p-0 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
-                            Manage classes <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -258,7 +364,7 @@
                                         </div>
                                         <div class="text-end">
                                             <span class="badge bg-@sub.UrgencyClass bg-opacity-10 text-@sub.UrgencyClass rounded-pill px-3 py-2 fw-semibold">
-                                                <i class="fas @sub.UrgencyIcon me-1"></i>
+                                                <i class="bi @sub.UrgencyIcon me-1"></i>
                                                 @sub.UrgencyText
                                             </span>
                                         </div>
@@ -308,7 +414,7 @@
                                         <div class="d-flex align-items-center">
                                             <div class="me-3">
                                                 <span class="badge @record.StatusBadgeClass p-2 rounded-3">
-                                                    <i class="fas @record.StatusIcon"></i>
+                                                    <i class="bi @record.StatusIcon"></i>
                                                 </span>
                                             </div>
                                             <div>

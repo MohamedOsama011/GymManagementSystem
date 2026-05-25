@@ -12,8 +12,9 @@
                     <h4 class="mb-0">Edit Trainer: @Model.FullName</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Edit" method="post">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <input asp-for="Id" type="hidden" />
+                        <input asp-for="ExistingPhotoPath" type="hidden" />
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -27,6 +28,24 @@
                             <label asp-for="JobTitle" class="form-label fw-semibold"></label>
                             <input asp-for="JobTitle" class="form-control" />
                             <span asp-validation-for="JobTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Photo" class="form-label fw-semibold"></label>
+                            @if (!string.IsNullOrWhiteSpace(Model.ExistingPhotoPath))
+                            {
+                                var photoUrl = Url.Content(Model.ExistingPhotoPath.StartsWith("~/", StringComparison.Ordinal)
+                                    ? Model.ExistingPhotoPath
+                                    : $"~{Model.ExistingPhotoPath}");
+                                <div class="mb-2">
+                                    <img src="@photoUrl"
+                                         alt="@Model.FullName photo"
+                                         class="rounded-circle border"
+                                         style="width: 96px; height: 96px; object-fit: cover;" />
+                                </div>
+                            }
+                            <input asp-for="Photo" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                            <span asp-validation-for="Photo" class="text-danger"></span>
                         </div>
 
                         <div class="mb-4">

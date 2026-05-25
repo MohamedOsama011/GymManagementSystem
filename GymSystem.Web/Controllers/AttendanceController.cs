@@ -29,14 +29,7 @@ namespace GymSystem.Web.Controllers
         // GET: Attendance/CheckIn
         public async Task<IActionResult> CheckIn()
         {
-            var dto = await _attendanceService.GetCheckInDataAsync();
-
-            var viewModel = new CheckInViewModel
-            {
-                Members = dto.Members.Select(m =>
-                    new SelectListItem(m.Name, m.Id.ToString()))
-            };
-
+            var viewModel = await BuildCheckInViewModelAsync();
             return View(viewModel);
         }
 
@@ -47,9 +40,10 @@ namespace GymSystem.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var dto = await _attendanceService.GetCheckInDataAsync();
-                model.Members = dto.Members.Select(m =>
-                    new SelectListItem(m.Name, m.Id.ToString()));
+                var refreshed = await BuildCheckInViewModelAsync();
+                model.Members = refreshed.Members;
+                model.ActiveMembersCount = refreshed.ActiveMembersCount;
+                model.TotalCheckInsToday = refreshed.TotalCheckInsToday;
                 return View(model);
             }
 
@@ -85,7 +79,8 @@ namespace GymSystem.Web.Controllers
             var viewModels = dtos.Select(MapToViewModel);
 
             ViewData["MemberId"] = memberId;
-            ViewData["MemberName"] = dtos.FirstOrDefault()?.MemberName ?? "Unknown";
+            ViewData["MemberName"] = await _attendanceService.GetMemberNameAsync(memberId);
+            ViewBag.Stats = await _attendanceService.GetStatsAsync(memberId);
 
             return View(viewModels);
         }
@@ -107,6 +102,20 @@ namespace GymSystem.Web.Controllers
             ViewBag.MemberId = memberId;
 
             return View("Index", viewModels);
+        }
+
+        private async Task<CheckInViewModel> BuildCheckInViewModelAsync()
+        {
+            var dto = await _attendanceService.GetCheckInDataAsync();
+            var stats = await _attendanceService.GetStatsAsync();
+
+            return new CheckInViewModel
+            {
+                Members = dto.Members.Select(m =>
+                    new SelectListItem(m.Name, m.Id.ToString())),
+                ActiveMembersCount = dto.Members.Count,
+                TotalCheckInsToday = stats.TotalCheckIns
+            };
         }
 
         private AttendanceViewModel MapToViewModel(AttendanceRecordDto dto) => new()
